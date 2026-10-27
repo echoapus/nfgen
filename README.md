@@ -828,3 +828,7 @@ cargo test --locked --release --test protocol offline_throughput -- --ignored --
 ```
 
 The first two need OS permission for sockets; raw loopback additionally requires Linux and CAP_NET_RAW. Offline performance excludes UDP syscalls, networks, and collectors, so it cannot establish wire throughput. Real-system verification still requires send summaries, receiver logs, and pcaps when needed.
+
+## License
+
+[PolyForm Noncommercial 1.0.0](LICENSE). Free for study, research, personal and other noncommercial use, including modified builds. Commercial use (selling it, or selling modified versions) is not allowed.

@@ -830,3 +830,7 @@ cargo test --locked --release --test protocol offline_throughput -- --ignored --
 ```
 
 前兩項需要系統允許 socket，raw loopback 另需 Linux 與 CAP_NET_RAW。離線效能測試不含 UDP syscall、網路或 collector，不能據此宣稱線路吞吐。實機驗證仍需保留發送摘要、接收程式日誌與必要時的 pcap。
+
+## 授權
+
+[PolyForm Noncommercial 1.0.0](LICENSE)。可自由用於學習、研究、個人及其他非商業用途（包含修改後重新編譯）。禁止商業用途（不得販售本軟體或其修改版本）。

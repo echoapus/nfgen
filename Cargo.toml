@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.85"
 description = "NeoFlow Generator: a validated NetFlow v9 generator with offline preview"
+license = "PolyForm-Noncommercial-1.0.0"
 
 [dependencies]
 anyhow = "1.0"
