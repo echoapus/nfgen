@@ -1,0 +1,21 @@
+{
+  "source_id": 42,
+  "flows": [
+    {
+      "template_id": 500,
+      "fields": [
+        {"name": "IPV4_SRC_ADDR", "value": "192.0.2.1"},
+        {"name": "IPV4_DST_ADDR", "value": "198.51.100.2"},
+        {"name": "SRC_AS", "value": [65000, "AS65000", "0.65000", "1.10", "AS1.10"]},
+        {"name": "DST_AS", "value": "AS4200000000"}
+      ]
+    },
+    {
+      "template_id": 501,
+      "fields": [
+        {"name": "MPLS_VPN_RD", "value": ["AS65000:100", "AS1.10:100", "2:AS0.65000:100"]},
+        {"name": "MPLS_LABEL_1", "value": {"label": 16000, "bos": true}}
+      ]
+    }
+  ]
+}

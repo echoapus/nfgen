@@ -1,0 +1,54 @@
+'use strict';
+// Exercise event handlers with DOM stubs; layout and native browser dialogs need browser QA.
+const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('node:assert/strict');
+const html=fs.readFileSync(path.join(__dirname,'..','config-builder.html'),'utf8');
+const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
+function app(storage=new Map()){
+ const nodes=new Map(),events={};let allowReplace=true;
+ for(const [,id] of html.matchAll(/\bid="([^"]+)"/g))nodes.set(id,{id,value:'',checked:false,disabled:false,hidden:false,textContent:'',innerHTML:'',listeners:{},classList:{remove(){},add(){}},addEventListener(type,fn){this.listeners[type]=fn;},setAttribute(){},removeAttribute(){}});
+ const doc={getElementById(id){assert(nodes.has(id),'missing static element '+id);return nodes.get(id);},querySelectorAll(){return [];},querySelector(){return null;},addEventListener(type,fn){events[type]=fn;},createElement(){return {click(){},remove(){}};},body:{append(){}}};
+ const windows={confirm(){return allowReplace;},addEventListener(type,fn){events[type]=fn;}};
+ const ctx=vm.createContext({TextEncoder,document:doc,window:windows,localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},URL:{createObjectURL(){return 'blob:test';},revokeObjectURL(){}},Blob,setTimeout(){}});
+ vm.runInContext(script,ctx);
+ const node=id=>nodes.get(id);
+ const click=id=>node(id).listeners.click();
+ const changedSource=value=>{node('source-id').value=value;events.input({target:{dataset:{path:'sourceId'},value,type:'text'}});};
+ const unload=()=>{let prevented=false;const event={preventDefault(){prevented=true;}};events.beforeunload(event);return prevented;};
+ return {node,click,events,changedSource,unload,storage,set allowReplace(value){allowReplace=value;}};
+}
+(async()=>{
+ const shared=app();
+ shared.node('flows').listeners.click({target:{closest(){return {dataset:{action:'duplicate-shared-flow',i:'0'}};}}});
+ assert.equal(shared.node('templates-stat').textContent,1);
+ assert.equal(JSON.parse(shared.node('json-output').textContent).flows.length,2);
+ shared.events.input({target:{dataset:{path:'flows.1.fields.4.single.value'},value:'17',type:'text'}});
+ assert.equal(shared.node('download').disabled,false);
+ shared.events.change({target:{dataset:{select:'name',i:'1',zone:'fields',j:'4'},value:'OUT_PKTS'}});
+ assert.equal(shared.node('download').disabled,true);
+ const linked=app();
+ linked.events.change({target:{dataset:{select:'mode',i:'0',zone:'fields',j:'6'},value:'calculated'}});
+ assert.match(linked.node('flows').innerHTML,/average packet size/);
+ assert.equal(JSON.parse(linked.node('json-output').textContent).flows[0].fields[6].value,1000);
+ linked.events.input({target:{dataset:{path:'flows.0.fields.7.single.value'},value:'20',type:'text'}});
+ assert.equal(JSON.parse(linked.node('json-output').textContent).flows[0].fields[6].value,2000);
+ linked.events.input({target:{dataset:{path:'flows.0.fields.6.avgPacketSize'},value:'150',type:'text'}});
+ assert.equal(JSON.parse(linked.node('json-output').textContent).flows[0].fields[6].value,3000);
+ linked.events.change({target:{dataset:{select:'mode',i:'0',zone:'fields',j:'7'},value:'list'}});
+ assert.equal(linked.node('download').disabled,true);
+ linked.events.change({target:{dataset:{select:'mode',i:'0',zone:'fields',j:'7'},value:'single'}});
+ assert.equal(linked.node('download').disabled,false);
+ const ui=app(),original=ui.node('json-output').textContent;
+ assert.equal(ui.unload(),false);ui.changedSource('99');assert.equal(JSON.parse(ui.node('json-output').textContent).source_id,99);assert.equal(ui.unload(),true);assert.equal(ui.storage.size,0,'drafts must be opt in');
+ ui.node('import-text').value='{"source_id":7,"flows":[{"template_id":300,"fields":[{"name":"IPV4_SRC_ADDR","value":"1.1.1.0/32"}]}]}';
+ ui.allowReplace=false;ui.click('import-json');assert.equal(JSON.parse(ui.node('json-output').textContent).source_id,99,'cancel must retain edits');
+ ui.allowReplace=true;ui.click('import-json');assert.equal(JSON.parse(ui.node('json-output').textContent).source_id,7);
+ const valid=ui.node('json-output').textContent;ui.node('import-text').value='{"flows":[],"unknown":true}';ui.click('import-json');assert.equal(ui.node('json-output').textContent,valid,'bad imports must retain edits');assert.match(ui.node('import-error').textContent,/unknown/);
+ ui.node('save-draft').checked=true;ui.node('save-draft').listeners.change();assert.equal(ui.storage.size,1);ui.changedSource('incomplete');assert.equal(ui.node('download').disabled,true);assert.equal(ui.node('jump-error').hidden,false);
+ const restored=app(ui.storage);assert.equal(restored.node('restore-draft').disabled,false);restored.click('restore-draft');assert.equal(restored.node('source-id').value,'incomplete');assert.equal(restored.node('download').disabled,true);
+ restored.click('delete-draft');assert.equal(restored.storage.size,0);assert.equal(restored.node('source-id').value,'incomplete','deleting draft must retain form');
+ ui.changedSource('7');ui.click('download');assert.equal(ui.unload(),false);
+ ui.changedSource('8');ui.node('save-draft').checked=false;ui.node('save-draft').listeners.change();const saved=[...ui.storage.values()][0];ui.changedSource('9');assert.equal([...ui.storage.values()][0],saved,'disabled autosave must preserve last snapshot');
+ const imported=app();imported.node('import-file').files=[{name:'test.json',size:100,text:async()=>'{"flows":[{"template_id":256,"fields":[{"name":"PROTOCOL","value":17}]}]}'}];await imported.node('import-file').listeners.change({target:imported.node('import-file')});assert.equal(JSON.parse(imported.node('json-output').textContent).flows[0].fields[0].value,17);
+ const race=app();let finish;race.node('import-file').files=[{name:'test.json',size:100,text:()=>new Promise(resolve=>finish=resolve)}];const pending=race.node('import-file').listeners.change({target:race.node('import-file')});race.changedSource('123');finish(original);await pending;assert.equal(JSON.parse(race.node('json-output').textContent).source_id,123);assert.match(race.node('import-error').textContent,/changed/);
+ console.log('UI handler smoke checks passed: import/cancel/reject/file race, opt-in autosave, invalid draft restore, delete, download and leave-page state (DOM stubs; no browser rendering).');
+})().catch(error=>{console.error(error);process.exitCode=1;});

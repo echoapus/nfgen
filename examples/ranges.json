@@ -1,0 +1,22 @@
+{
+  "source_id": 42,
+  "flows": [
+    {
+      "template_id": 256,
+      "fields": [
+        {"name": "IPV4_SRC_ADDR", "value": {"start": "192.0.2.1", "end": "192.0.2.2"}},
+        {"name": "IPV4_DST_ADDR", "value": {"start": "198.51.100.2", "end": "198.51.100.3", "step": 1}},
+        {"name": "L4_DST_PORT", "value": [80, 443]},
+        {"name": "PROTOCOL", "value": 6}
+      ]
+    },
+    {
+      "template_id": 257,
+      "fields": [
+        {"name": "IPV6_SRC_ADDR", "value": {"start": "2001:db8::1", "end": "2001:db8::3"}},
+        {"name": "IPV6_DST_ADDR", "value": "2001:db8:1::1"},
+        {"name": "PROTOCOL", "value": 17}
+      ]
+    }
+  ]
+}

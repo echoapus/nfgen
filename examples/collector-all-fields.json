@@ -1,0 +1,809 @@
+{
+  "source_id": 424242,
+  "flows": [
+    {
+      "template_id": 1000,
+      "fields": [
+        {
+          "name": "IPV4_SRC_ADDR",
+          "value": "192.0.2.10"
+        },
+        {
+          "name": "IPV4_DST_ADDR",
+          "value": "198.51.100.10"
+        },
+        {
+          "name": "IP_PROTOCOL_VERSION",
+          "value": 4
+        },
+        {
+          "name": "PROTOCOL",
+          "value": 6
+        },
+        {
+          "name": "L4_SRC_PORT",
+          "value": 12345
+        },
+        {
+          "name": "L4_DST_PORT",
+          "value": 443
+        },
+        {
+          "name": "TCP_FLAGS",
+          "value": "SYN|ACK"
+        },
+        {
+          "name": "IN_PKTS",
+          "value": 10
+        },
+        {
+          "name": "IN_BYTES",
+          "value": 1000
+        },
+        {
+          "name": "FIRST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "LAST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "FLOWS",
+          "value": 1
+        },
+        {
+          "name": "SRC_TOS",
+          "value": 16
+        },
+        {
+          "name": "DST_TOS",
+          "value": 32
+        },
+        {
+          "name": "SRC_MASK",
+          "value": 24
+        },
+        {
+          "name": "DST_MASK",
+          "value": 24
+        },
+        {
+          "name": "INPUT_SNMP",
+          "value": 70001
+        },
+        {
+          "name": "OUTPUT_SNMP",
+          "value": 70002
+        },
+        {
+          "name": "IPV4_NEXT_HOP",
+          "value": "192.0.2.254"
+        },
+        {
+          "name": "BGP_IPV4_NEXT_HOP",
+          "value": "198.51.100.254"
+        },
+        {
+          "name": "SRC_AS",
+          "value": "AS1.10"
+        },
+        {
+          "name": "DST_AS",
+          "value": 4200000000
+        },
+        {
+          "name": "OUT_PKTS",
+          "value": 20
+        },
+        {
+          "name": "OUT_BYTES",
+          "value": 2000
+        }
+      ]
+    },
+    {
+      "template_id": 1001,
+      "fields": [
+        {
+          "name": "IPV4_SRC_ADDR",
+          "value": "1.1.1.0/32"
+        },
+        {
+          "name": "IPV4_DST_ADDR",
+          "value": "198.51.100.11"
+        },
+        {
+          "name": "IP_PROTOCOL_VERSION",
+          "value": 4
+        },
+        {
+          "name": "PROTOCOL",
+          "value": 17
+        },
+        {
+          "name": "L4_SRC_PORT",
+          "value": 12345
+        },
+        {
+          "name": "L4_DST_PORT",
+          "value": 53
+        },
+        {
+          "name": "IN_PKTS",
+          "value": 11
+        },
+        {
+          "name": "IN_BYTES",
+          "value": 1100
+        },
+        {
+          "name": "FIRST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "LAST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "SRC_MASK",
+          "value": 32
+        },
+        {
+          "name": "DST_MASK",
+          "value": 32
+        },
+        {
+          "name": "INPUT_SNMP",
+          "value": 11
+        },
+        {
+          "name": "OUTPUT_SNMP",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "template_id": 1002,
+      "fields": [
+        {
+          "name": "IPV6_SRC_ADDR",
+          "value": "2001:db8:1002::10"
+        },
+        {
+          "name": "IPV6_DST_ADDR",
+          "value": "2001:db8:2002::20"
+        },
+        {
+          "name": "IP_PROTOCOL_VERSION",
+          "value": 6
+        },
+        {
+          "name": "PROTOCOL",
+          "value": 6
+        },
+        {
+          "name": "L4_SRC_PORT",
+          "value": 12345
+        },
+        {
+          "name": "L4_DST_PORT",
+          "value": 443
+        },
+        {
+          "name": "TCP_FLAGS",
+          "value": "SYN|ACK"
+        },
+        {
+          "name": "IN_PKTS",
+          "value": 12
+        },
+        {
+          "name": "IN_BYTES",
+          "value": 1200
+        },
+        {
+          "name": "FIRST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "LAST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "IPV6_SRC_MASK",
+          "value": 64
+        },
+        {
+          "name": "IPV6_DST_MASK",
+          "value": 64
+        },
+        {
+          "name": "IPV6_NEXT_HOP",
+          "value": "2001:db8:1002::ffff"
+        },
+        {
+          "name": "BGP_IPV6_NEXT_HOP",
+          "value": "2001:db8:2002::ffff"
+        },
+        {
+          "name": "INPUT_SNMP",
+          "value": 80001
+        },
+        {
+          "name": "OUTPUT_SNMP",
+          "value": 80002
+        },
+        {
+          "name": "SRC_AS",
+          "value": 65002
+        },
+        {
+          "name": "DST_AS",
+          "value": "AS1.20"
+        }
+      ]
+    },
+    {
+      "template_id": 1003,
+      "fields": [
+        {
+          "name": "IPV4_SRC_ADDR",
+          "value": "192.0.2.13"
+        },
+        {
+          "name": "IPV4_DST_ADDR",
+          "value": "198.51.100.13"
+        },
+        {
+          "name": "IP_PROTOCOL_VERSION",
+          "value": 4
+        },
+        {
+          "name": "PROTOCOL",
+          "value": 1
+        },
+        {
+          "name": "IN_PKTS",
+          "value": 13
+        },
+        {
+          "name": "IN_BYTES",
+          "value": 1300
+        },
+        {
+          "name": "FIRST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "LAST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "ICMP_TYPE",
+          "value": [
+            {
+              "type": "echo-request",
+              "code": 0
+            },
+            {
+              "type": "destination-unreachable",
+              "code": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "template_id": 1004,
+      "fields": [
+        {
+          "name": "IPV6_SRC_ADDR",
+          "value": "2001:db8:1004::10"
+        },
+        {
+          "name": "IPV6_DST_ADDR",
+          "value": "2001:db8:2004::20"
+        },
+        {
+          "name": "IP_PROTOCOL_VERSION",
+          "value": 6
+        },
+        {
+          "name": "PROTOCOL",
+          "value": 58
+        },
+        {
+          "name": "IN_PKTS",
+          "value": 14
+        },
+        {
+          "name": "IN_BYTES",
+          "value": 1400
+        },
+        {
+          "name": "FIRST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "LAST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "ICMP_TYPE_IPV6",
+          "value": [
+            {
+              "type": "echo-request",
+              "code": 0
+            },
+            {
+              "type": "packet-too-big",
+              "code": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "template_id": 1005,
+      "fields": [
+        {
+          "name": "IPV4_SRC_ADDR",
+          "value": "192.0.2.15"
+        },
+        {
+          "name": "IPV4_DST_ADDR",
+          "value": "198.51.100.15"
+        },
+        {
+          "name": "IP_PROTOCOL_VERSION",
+          "value": 4
+        },
+        {
+          "name": "PROTOCOL",
+          "value": 17
+        },
+        {
+          "name": "L4_SRC_PORT",
+          "value": 12345
+        },
+        {
+          "name": "L4_DST_PORT",
+          "value": 2055
+        },
+        {
+          "name": "IN_PKTS",
+          "value": 15
+        },
+        {
+          "name": "IN_BYTES",
+          "value": 1500
+        },
+        {
+          "name": "FIRST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "LAST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "INPUT_SNMP",
+          "value": [
+            0,
+            1,
+            65535,
+            65536,
+            4294967295
+          ]
+        },
+        {
+          "name": "OUTPUT_SNMP",
+          "value": 70002
+        }
+      ]
+    },
+    {
+      "template_id": 1006,
+      "fields": [
+        {
+          "name": "IPV4_SRC_ADDR",
+          "value": "192.0.2.16"
+        },
+        {
+          "name": "IPV4_DST_ADDR",
+          "value": "198.51.100.16"
+        },
+        {
+          "name": "IP_PROTOCOL_VERSION",
+          "value": 4
+        },
+        {
+          "name": "PROTOCOL",
+          "value": 6
+        },
+        {
+          "name": "L4_SRC_PORT",
+          "value": 12345
+        },
+        {
+          "name": "L4_DST_PORT",
+          "value": 443
+        },
+        {
+          "name": "TCP_FLAGS",
+          "value": "SYN|ACK"
+        },
+        {
+          "name": "IN_PKTS",
+          "value": 16
+        },
+        {
+          "name": "IN_BYTES",
+          "value": 1600
+        },
+        {
+          "name": "FIRST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "LAST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "MPLS_LABEL_1",
+          "value": {
+            "label": 16000,
+            "tc": 3,
+            "bos": false
+          }
+        },
+        {
+          "name": "MPLS_LABEL_2",
+          "value": {
+            "label": 16001,
+            "tc": 0,
+            "bos": false
+          }
+        },
+        {
+          "name": "MPLS_LABEL_3",
+          "value": {
+            "label": 16002,
+            "tc": 0,
+            "bos": false
+          }
+        },
+        {
+          "name": "MPLS_LABEL_4",
+          "value": {
+            "label": 16003,
+            "tc": 0,
+            "bos": false
+          }
+        },
+        {
+          "name": "MPLS_LABEL_5",
+          "value": {
+            "label": 16004,
+            "tc": 0,
+            "bos": false
+          }
+        },
+        {
+          "name": "MPLS_LABEL_6",
+          "value": {
+            "label": 16005,
+            "tc": 0,
+            "bos": false
+          }
+        },
+        {
+          "name": "MPLS_LABEL_7",
+          "value": {
+            "label": 16006,
+            "tc": 0,
+            "bos": false
+          }
+        },
+        {
+          "name": "MPLS_LABEL_8",
+          "value": {
+            "label": 16007,
+            "tc": 0,
+            "bos": false
+          }
+        },
+        {
+          "name": "MPLS_LABEL_9",
+          "value": {
+            "label": 16008,
+            "tc": 0,
+            "bos": false
+          }
+        },
+        {
+          "name": "MPLS_LABEL_10",
+          "value": {
+            "label": 16009,
+            "tc": 0,
+            "bos": true
+          }
+        }
+      ]
+    },
+    {
+      "template_id": 1007,
+      "fields": [
+        {
+          "name": "IPV4_SRC_ADDR",
+          "value": "192.0.2.17"
+        },
+        {
+          "name": "IPV4_DST_ADDR",
+          "value": "198.51.100.17"
+        },
+        {
+          "name": "IP_PROTOCOL_VERSION",
+          "value": 4
+        },
+        {
+          "name": "PROTOCOL",
+          "value": 6
+        },
+        {
+          "name": "L4_SRC_PORT",
+          "value": 12345
+        },
+        {
+          "name": "L4_DST_PORT",
+          "value": 443
+        },
+        {
+          "name": "TCP_FLAGS",
+          "value": "SYN|ACK"
+        },
+        {
+          "name": "IN_PKTS",
+          "value": 17
+        },
+        {
+          "name": "IN_BYTES",
+          "value": 1700
+        },
+        {
+          "name": "FIRST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "LAST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "MPLS_LABEL_1",
+          "value": {
+            "label": 24000,
+            "tc": 2,
+            "bos": true
+          }
+        },
+        {
+          "name": "MPLS_TOP_LABEL_TYPE",
+          "value": 3
+        },
+        {
+          "name": "MPLS_TOP_LABEL_IP_ADDR",
+          "value": "203.0.113.0"
+        },
+        {
+          "name": "MPLS_VPN_RD",
+          "value": [
+            "65000:100",
+            "192.0.2.1:101",
+            "4200000000:102"
+          ]
+        },
+        {
+          "name": "MPLS_TOP_LABEL_PREFIX_LEN",
+          "value": 24
+        },
+        {
+          "name": "MPLS_TOP_LABEL_TTL",
+          "value": 64
+        },
+        {
+          "name": "MPLS_LABEL_STACK_LENGTH",
+          "value": 4
+        },
+        {
+          "name": "MPLS_LABEL_STACK_DEPTH",
+          "value": 1
+        },
+        {
+          "name": "MPLS_TOP_LABEL_EXP",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "template_id": 1008,
+      "fields": [
+        {
+          "name": "IPV6_SRC_ADDR",
+          "value": "2001:db8:1008::10"
+        },
+        {
+          "name": "IPV6_DST_ADDR",
+          "value": "2001:db8:2008::20"
+        },
+        {
+          "name": "IP_PROTOCOL_VERSION",
+          "value": 6
+        },
+        {
+          "name": "PROTOCOL",
+          "value": 6
+        },
+        {
+          "name": "L4_SRC_PORT",
+          "value": 12345
+        },
+        {
+          "name": "L4_DST_PORT",
+          "value": 443
+        },
+        {
+          "name": "TCP_FLAGS",
+          "value": "SYN|ACK"
+        },
+        {
+          "name": "IN_PKTS",
+          "value": 18
+        },
+        {
+          "name": "IN_BYTES",
+          "value": 1800
+        },
+        {
+          "name": "FIRST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "LAST_SWITCHED",
+          "value": 0
+        },
+        {
+          "name": "MPLS_LABEL_1",
+          "value": {
+            "label": 26000,
+            "tc": 1,
+            "bos": true
+          }
+        },
+        {
+          "name": "MPLS_TOP_LABEL_TYPE",
+          "value": 3
+        },
+        {
+          "name": "MPLS_TOP_LABEL_IPV6_ADDR",
+          "value": "2001:db8:ffff::"
+        },
+        {
+          "name": "MPLS_TOP_LABEL_PREFIX_LEN",
+          "value": 64
+        },
+        {
+          "name": "MPLS_TOP_LABEL_TTL",
+          "value": 63
+        },
+        {
+          "name": "MPLS_LABEL_STACK_LENGTH",
+          "value": 4
+        },
+        {
+          "name": "MPLS_LABEL_STACK_DEPTH",
+          "value": 1
+        },
+        {
+          "name": "MPLS_TOP_LABEL_EXP",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "template_id": 1100,
+      "scope": [
+        {
+          "name": "SYSTEM",
+          "value": 1
+        }
+      ],
+      "fields": [
+        {
+          "name": "SAMPLING_INTERVAL",
+          "value": 1
+        },
+        {
+          "name": "SAMPLING_ALGORITHM",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "template_id": 1101,
+      "scope": [
+        {
+          "name": "INTERFACE",
+          "value": 70001
+        }
+      ],
+      "fields": [
+        {
+          "name": "SAMPLING_INTERVAL",
+          "value": 1
+        },
+        {
+          "name": "SAMPLING_ALGORITHM",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "template_id": 1102,
+      "scope": [
+        {
+          "name": "LINE_CARD",
+          "value": 2
+        }
+      ],
+      "fields": [
+        {
+          "name": "SAMPLING_INTERVAL",
+          "value": 1
+        },
+        {
+          "name": "SAMPLING_ALGORITHM",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "template_id": 1103,
+      "scope": [
+        {
+          "name": "NETFLOW_CACHE",
+          "value": 1
+        }
+      ],
+      "fields": [
+        {
+          "name": "SAMPLING_INTERVAL",
+          "value": 1
+        },
+        {
+          "name": "SAMPLING_ALGORITHM",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "template_id": 1104,
+      "scope": [
+        {
+          "name": "TEMPLATE",
+          "value": 1000
+        }
+      ],
+      "fields": [
+        {
+          "name": "SAMPLING_INTERVAL",
+          "value": 1
+        },
+        {
+          "name": "SAMPLING_ALGORITHM",
+          "value": 1
+        }
+      ]
+    }
+  ]
+}

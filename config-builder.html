@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Create nfgen configurations offline and generate NetFlow v9 JSON.">
+<title>NeoFlow Generator — JSON Configuration Builder</title>
+<style>
+:root{color-scheme:light;--ink:#44494a;--muted:#686b68;--accent:#596c63;--line:#d4d0c8;--paper:#eeebe6;--white:#faf8f5;--red:#945c59;font:15px/1.6 system-ui,-apple-system,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink)}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,textarea:focus-visible{outline:3px solid #7c8994;outline-offset:3px}header{border-bottom:1px solid var(--line);background:#faf8f5}nav{max-width:1440px;margin:auto;padding:20px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-size:23px;font-weight:800;letter-spacing:-1px}.brand span{font-size:12px;font-weight:500;letter-spacing:1px;margin-left:16px;border-left:1px solid var(--line);padding-left:16px;color:var(--muted)}.badge{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:30px;padding:5px 12px;font-size:12px}.dot{width:7px;height:7px;background:#7b8a7d;border-radius:50%}.wrap{max-width:1440px;margin:auto;padding:38px 32px 50px}.eyebrow{text-transform:uppercase;font:600 11px/1.6 ui-monospace,monospace;letter-spacing:2px;color:var(--accent)}h1{font-size:clamp(27px,3vw,39px);letter-spacing:-1.5px;margin:6px 0 8px;line-height:1.3}p{margin:0 0 12px}.intro{color:var(--muted);max-width:740px}.top{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:28px}.steps{font-size:12px;color:var(--muted);white-space:nowrap}.steps b{color:var(--accent)}.workspace{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(340px,.85fr);gap:24px;align-items:start}.panel{background:var(--white);border:1px solid var(--line);border-radius:13px;margin-bottom:20px;overflow:hidden}.panel-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:14px}.panel-head h2,.panel-head h3{font-size:16px;margin:0;font-weight:700}.panel-body{padding:20px 22px}.small,.hint{font-size:12px;color:var(--muted)}.hint{margin-top:6px;line-height:1.5}.section-label{font-size:12px;font-weight:700;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.control{display:block;min-width:0;font-size:12px;font-weight:600;color:#5d625e}.control input,.control select{display:block;width:100%;margin-top:5px;border:1px solid #87908a;border-radius:6px;padding:9px 10px;background:var(--white);color:var(--ink);font-size:14px;font-weight:400;min-width:0}.control input:hover,.control select:hover{border-color:#687c72}.check{display:flex;align-items:center;gap:7px;font-size:12px;align-self:end;min-height:43px}.check input{accent-color:var(--accent)}.btn{border:1px solid #87908a;border-radius:7px;padding:9px 14px;background:var(--white);color:var(--ink);font-size:13px;font-weight:600;white-space:nowrap}.btn:hover{background:#e3e6df}.btn.primary{background:var(--accent);color:var(--white);border-color:var(--accent)}.btn.primary:hover{background:#4c5e57}.btn.subtle{border-color:transparent;background:transparent;color:var(--muted);padding:5px 8px}.btn.subtle:hover{background:#eee2df;color:var(--red)}.btn.small{padding:6px 10px;font-size:12px}.flow-number{font:600 11px ui-monospace,monospace;color:var(--accent);margin-right:9px}.tag{background:#e4e8e0;color:var(--accent);font-size:11px;padding:3px 8px;border-radius:4px}.flow-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px;margin-bottom:10px}.field{border:1px solid var(--line);border-radius:8px;margin-top:10px;padding:14px;background:#f3f1ed}.field-top{display:grid;grid-template-columns:minmax(0,1fr) 112px auto;gap:9px;align-items:end}.field-top .control select{font-size:12px}.field-values{margin-top:10px}.scalar+.scalar{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}.scalar-line{display:flex;align-items:end;gap:8px}.scalar-line>.control{flex:1}.empty{padding:12px 0;color:var(--muted);font-size:13px}.scope-box{padding-bottom:17px;margin-bottom:16px;border-bottom:1px solid var(--line)}.output{position:sticky;top:20px}.output .panel{background:#454f57;border-color:#454f57;color:#ebe7df}.output .panel-head{border-color:#77828a}.output .small{color:#d0d3d0}.output-top{display:flex;align-items:center;gap:8px}.output pre{font:12px/1.85 ui-monospace,SFMono-Regular,Consolas,monospace;margin:0;padding:22px;min-height:320px;max-height:65vh;overflow:auto;tab-size:2;color:#e1e4dd;white-space:pre;overscroll-behavior:contain}.output pre[aria-invalid=true]{white-space:pre-wrap;color:#e8c1bc}.output-actions{padding:16px 20px;display:flex;gap:9px;border-top:1px solid #77828a}.output .btn{background:transparent;border-color:#a6afad;color:var(--white)}.output .btn.primary{background:#c4cec0;border-color:#c4cec0;color:#35433e}.stats{display:grid;grid-template-columns:repeat(3,1fr);padding:14px 20px;border-bottom:1px solid #77828a;gap:8px}.stat strong{display:block;font:500 24px/1.5 ui-monospace,monospace;color:#cdd5c7}.stat span{font-size:11px;color:#d0d3d0}.status{font-size:12px;color:#d5ddd0}.status.error{color:#e8c1bc}.note{font-size:12px;border-left:3px solid #a7afa1;padding:2px 0 2px 12px;color:var(--muted)}#notice{font-size:12px;min-height:20px;color:var(--accent);margin-top:10px}footer{margin-top:24px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:18px}a{color:var(--accent)}.add-flow{display:flex;gap:10px;align-items:end}.add-flow>.control{flex:1}.warning{color:#826b4e;margin-top:8px;font-size:12px}@media(max-width:1050px){.workspace{grid-template-columns:minmax(0,1fr) minmax(300px,.85fr)}.wrap{padding:28px 20px}.panel-body,.panel-head{padding:16px}.field{padding:11px}.steps{display:none}}@media(max-width:780px){.workspace{grid-template-columns:1fr}.output{position:static}.output pre{max-height:420px}.top{display:block}nav{padding:16px 20px}.badge{font-size:11px}.brand span{margin-left:10px;padding-left:10px}.field-top{grid-template-columns:minmax(0,1fr) 100px auto}.wrap{padding:24px 14px}footer{display:block}.grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(prefers-reduced-motion:no-preference){button{transition:background .15s,border-color .15s}}
+
+textarea{background:var(--white);color:var(--ink);font:13px/1.6 ui-monospace,monospace;width:100%;min-height:140px;resize:vertical;border:1px solid #87908a;border-radius:6px;padding:10px;box-sizing:border-box}.toolbar,.row-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.toolbar{margin:12px 0}.error-message{color:var(--red);font-size:12px;margin:6px 0 0;overflow-wrap:anywhere}.error-message:empty{display:none}.field.has-error{border-color:var(--red)}[aria-invalid="true"]:is(input,select){border-color:var(--red);outline-color:var(--red)}[hidden]{display:none!important}.field-search{margin-bottom:10px}.field-search .grid{gap:8px}.row-actions{margin-top:8px}.import-box summary{cursor:pointer;font-weight:700}.import-box .control{margin-top:12px}.draft-status{font-size:12px;color:var(--muted)}.field-help{margin-top:8px}.panel-head>.toolbar{margin:0;justify-content:flex-end}@media(max-width:520px){.field-top{grid-template-columns:minmax(0,1fr) 100px}.field-top>.btn{grid-column:2;justify-self:end}.field-search .grid{grid-template-columns:1fr}.panel-head{flex-wrap:wrap}}
+
+.output .btn:hover{background:#5a646c}.output .btn.primary:hover{background:#d1d9cb}
+.start-panel{border-color:#8b9b8c;background:#f1f4ed}.start-panel .panel-head{border-color:#c7d0c2}.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}.start-grid h3{font-size:15px;margin:0 0 6px}.file-choice{display:block;font-size:13px;font-weight:600}.file-choice input{display:block;width:100%;min-width:0;margin-top:12px;font-size:12px;color:var(--muted)}.file-choice input::file-selector-button{font:600 14px system-ui,sans-serif;background:var(--accent);color:var(--white);border:0;border-radius:7px;padding:12px 18px;margin-right:12px;cursor:pointer}.file-choice input::file-selector-button:hover{background:#4c5e57}.paste-choice{border-left:1px solid #c7d0c2;padding-left:24px}.paste-choice summary{padding:10px 0;color:var(--accent)}.start-panel>.panel-body>.hint{margin-bottom:0}.draft-panel .panel-head{padding-top:12px;padding-bottom:12px}.draft-panel .toolbar{margin-top:0}.draft-panel p{margin-bottom:0}@media(max-width:780px){.start-grid{grid-template-columns:1fr;gap:16px}.paste-choice{border-left:0;border-top:1px solid #c7d0c2;padding:12px 0 0}.start-panel .panel-head{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header><nav aria-label="Main navigation"><div class="brand">NeoFlow<span>CONFIG BUILDER · nfgen</span></div><span class="badge"><span class="dot" aria-hidden="true"></span>Works offline · Data stays on your device</span></nav></header>
+<main class="wrap">
+<div class="top"><div><div class="eyebrow">NetFlow v9 / JSON generator</div><h1>Load a configuration or start with a preset.</h1><p class="intro">Already have JSON? Load it to continue editing. For a new configuration, start with the default IPv4 TCP preset below, preview the result, and download it when ready.</p></div><div class="steps"><b>01 Load / Edit</b> → 02 Preview → 03 Download JSON</div></div>
+<section class="panel start-panel" aria-labelledby="start-title">
+<div class="panel-head"><h2 id="start-title">Start here</h2><span class="small">Load an existing configuration or edit the preset below</span></div>
+<div class="panel-body"><div class="start-grid">
+<div><h3>Load existing JSON</h3><p class="small" id="file-help">Choose an nfgen configuration file. The form updates after validation succeeds.</p><label class="file-choice">Choose a JSON file<input id="import-file" type="file" accept=".json,application/json" aria-describedby="file-help import-help"></label></div>
+<div class="paste-choice"><h3>JSON on your clipboard?</h3><details class="import-box"><summary>Paste JSON content</summary><label class="control">JSON content<textarea id="import-text" placeholder='{"source_id":42,"flows":[…]}' aria-describedby="import-help"></textarea></label><div class="toolbar"><button id="import-json" class="btn" type="button">Load pasted JSON</button></div></details></div>
+</div><p id="import-help" class="hint">Loading replaces the current form; unsaved changes require confirmation. Maximum file size: 8 MiB. Unsupported content shows an error and leaves the form unchanged.</p><p id="import-error" class="error-message" role="alert"></p></div>
+</section>
+<div class="workspace"><section aria-label="Configuration form">
+<div class="panel"><div class="panel-head"><h2>Exporter identity</h2><span class="tag">NetFlow v9</span></div><div class="panel-body"><div class="grid"><label class="control" data-error-path="sourceId">Source ID<input id="source-id" data-path="sourceId" type="text" inputmode="numeric" value="42" autocomplete="off"><span class="error-message" id="source-error"></span></label><div><div class="section-label">Source identifier shared by all flows</div><p class="small">0–4294967295. This is not an IP address; use the CLI to set the actual source and destination.</p></div></div></div></div>
+<div class="panel draft-panel"><div class="panel-head"><h2>Local draft</h2><span class="small">Optional · Stored only in this browser</span></div><div class="panel-body">
+<div class="toolbar"><label class="check"><input id="save-draft" type="checkbox">Automatically save a draft in this browser (including incomplete fields)</label><button id="restore-draft" class="btn small" type="button" disabled>Restore draft</button><button id="delete-draft" class="btn small" type="button" disabled>Delete draft</button></div><p id="draft-status" class="draft-status" role="status">Draft saving is off by default. Drafts stay in this browser and are never uploaded.</p>
+</div></div>
+<div id="flows"></div>
+<div class="panel"><div class="panel-body add-flow"><label class="control">Add a flow<select id="new-preset"><option value="tcp4">IPv4 TCP</option><option value="tcp6">IPv6 TCP</option><option value="icmp4">IPv4 ICMP</option><option value="icmp6">IPv6 ICMP</option><option value="options">Options sampling</option><option value="mpls">MPLS label / RD</option><option value="custom">Custom fields</option></select></label><button class="btn primary" id="add-flow" type="button">+ Add flow</button></div></div>
+<p class="note">Configurations support up to 500,000 expanded records across all flows. Random between counts as one value; cumulative records sent are not subject to this limit.</p>
+</section>
+<aside class="output" aria-label="Generated JSON"><div class="panel"><div class="panel-head"><h2>JSON preview</h2><span id="status" class="status" role="status" aria-live="polite">Checking</span></div><div class="stats"><div class="stat"><strong id="templates-stat">—</strong><span>Templates</span></div><div class="stat"><strong id="records-stat">—</strong><span>Expanded records</span></div><div class="stat"><strong id="packets-stat">—</strong><span title="Calculated using the default packet-size of 1400 bytes">Data packets / cycle</span></div></div><pre id="json-output" tabindex="0" aria-label="JSON content"></pre><div class="output-actions"><button id="download" class="btn primary" type="button">↓ Download nfgen.json</button><button id="copy" class="btn" type="button">Copy JSON</button></div></div>
+<button id="jump-error" class="btn" type="button" hidden>Go to first error</button>
+<p id="warnings" class="warning"></p><div id="notice" role="status" aria-live="polite"></div>
+<p class="note">Generates configurations without sending packets. Draft saving is optional; changes not yet downloaded trigger a leave-page reminder. IPFIX v10 is not supported.</p></aside></div>
+<footer><span>nfgen Configuration Builder · No account, server, or network required</span><span><a href="README.md#configuration-format">Field reference</a> · <a href="README.md#build-and-quick-start">Getting started</a></span></footer>
+</main>
+<script>
+'use strict';
+// FIELD_SPECS is checked against src/fields.rs by tests/config-builder.test.cjs.
+const FIELD_SPECS = [["IN_BYTES", 1, 4, "Number"], ["IN_PKTS", 2, 4, "Number"], ["FLOWS", 3, 4, "Number"], ["PROTOCOL", 4, 1, "Number"], ["SRC_TOS", 5, 1, "Number"], ["TCP_FLAGS", 6, 1, "Number"], ["L4_SRC_PORT", 7, 2, "Number"], ["IPV4_SRC_ADDR", 8, 4, "Ipv4"], ["SRC_MASK", 9, 1, "Number"], ["INPUT_SNMP", 10, 4, "Number"], ["L4_DST_PORT", 11, 2, "Number"], ["IPV4_DST_ADDR", 12, 4, "Ipv4"], ["DST_MASK", 13, 1, "Number"], ["OUTPUT_SNMP", 14, 4, "Number"], ["IPV4_NEXT_HOP", 15, 4, "Ipv4"], ["SRC_AS", 16, 4, "Asn"], ["DST_AS", 17, 4, "Asn"], ["BGP_IPV4_NEXT_HOP", 18, 4, "Ipv4"], ["LAST_SWITCHED", 21, 4, "Number"], ["FIRST_SWITCHED", 22, 4, "Number"], ["OUT_BYTES", 23, 4, "Number"], ["OUT_PKTS", 24, 4, "Number"], ["IPV6_SRC_ADDR", 27, 16, "Ipv6"], ["IPV6_DST_ADDR", 28, 16, "Ipv6"], ["IPV6_SRC_MASK", 29, 1, "Number"], ["IPV6_DST_MASK", 30, 1, "Number"], ["ICMP_TYPE", 32, 2, "Icmp4"], ["SAMPLING_INTERVAL", 34, 4, "Number"], ["SAMPLING_ALGORITHM", 35, 1, "Number"], ["MPLS_TOP_LABEL_TYPE", 46, 1, "Number"], ["MPLS_TOP_LABEL_IP_ADDR", 47, 4, "Ipv4"], ["DST_TOS", 55, 1, "Number"], ["IP_PROTOCOL_VERSION", 60, 1, "Number"], ["IPV6_NEXT_HOP", 62, 16, "Ipv6"], ["BGP_IPV6_NEXT_HOP", 63, 16, "Ipv6"], ["MPLS_LABEL_1", 70, 3, "MplsLabel"], ["MPLS_LABEL_2", 71, 3, "MplsLabel"], ["MPLS_LABEL_3", 72, 3, "MplsLabel"], ["MPLS_LABEL_4", 73, 3, "MplsLabel"], ["MPLS_LABEL_5", 74, 3, "MplsLabel"], ["MPLS_LABEL_6", 75, 3, "MplsLabel"], ["MPLS_LABEL_7", 76, 3, "MplsLabel"], ["MPLS_LABEL_8", 77, 3, "MplsLabel"], ["MPLS_LABEL_9", 78, 3, "MplsLabel"], ["MPLS_LABEL_10", 79, 3, "MplsLabel"], ["MPLS_VPN_RD", 90, 8, "RouteDistinguisher"], ["MPLS_TOP_LABEL_PREFIX_LEN", 91, 1, "Number"], ["MPLS_TOP_LABEL_IPV6_ADDR", 140, 16, "Ipv6"], ["ICMP_TYPE_IPV6", 139, 2, "Icmp6"], ["MPLS_TOP_LABEL_TTL", 200, 1, "Number"], ["MPLS_LABEL_STACK_LENGTH", 201, 4, "Number"], ["MPLS_LABEL_STACK_DEPTH", 202, 4, "Number"], ["MPLS_TOP_LABEL_EXP", 203, 1, "Number"]];
+const SCOPES = [['SYSTEM',1,4,'Number'],['INTERFACE',2,4,'Number'],['LINE_CARD',3,4,'Number'],['NETFLOW_CACHE',4,4,'Number'],['TEMPLATE',5,2,'Number']];
+const LABELS = {IN_BYTES:'Input bytes',IN_PKTS:'Input packets',OUT_BYTES:'Output bytes',OUT_PKTS:'Output packets',FLOWS:'Flow count',PROTOCOL:'IP protocol',SRC_TOS:'Source ToS',TCP_FLAGS:'TCP flags',L4_SRC_PORT:'Source port',IPV4_SRC_ADDR:'Source IP (IPv4)',SRC_MASK:'Source mask (IPv4)',INPUT_SNMP:'Input interface ifIndex',L4_DST_PORT:'Destination port',IPV4_DST_ADDR:'Destination IP (IPv4)',DST_MASK:'Destination mask (IPv4)',OUTPUT_SNMP:'Output interface ifIndex',IPV4_NEXT_HOP:'IP next-hop (IPv4)',BGP_IPV4_NEXT_HOP:'BGP next-hop (IPv4)',SRC_AS:'Source ASN',DST_AS:'Destination ASN',LAST_SWITCHED:'End time (uptime ms)',FIRST_SWITCHED:'Start time (uptime ms)',OUT_BYTES:'Output bytes',OUT_PKTS:'Output packets',IPV6_SRC_ADDR:'Source IP (IPv6)',IPV6_DST_ADDR:'Destination IP (IPv6)',IPV6_SRC_MASK:'Source mask (IPv6)',IPV6_DST_MASK:'Destination mask (IPv6)',IPV6_NEXT_HOP:'IP next-hop (IPv6)',BGP_IPV6_NEXT_HOP:'BGP next-hop (IPv6)',ICMP_TYPE:'ICMP type / code',ICMP_TYPE_IPV6:'ICMPv6 type / code',MPLS_VPN_RD:'VPN route distinguisher',SAMPLING_INTERVAL:'Sampling interval',SAMPLING_ALGORITHM:'Sampling algorithm'};
+const MAX_RECORDS=500000n;
+function ensure(ok,message){if(!ok)throw new Error(message);}
+function integer(text,max,min=0){const s=String(text).trim();ensure(/^\d+$/.test(s),'Enter a nonnegative integer');const n=Number(s);ensure(Number.isSafeInteger(n)&&n>=min&&n<=max,`Enter an integer from ${min} to ${max}`);return n;}
+function ipNumber(text,kind){
+ const s=String(text).trim();
+ if(kind==='Ipv4'){const parts=s.split('.');ensure(parts.length===4&&parts.every(p=>/^(0|[1-9]\d{0,2})$/.test(p)&&Number(p)<=255),'Enter a valid IPv4 address');return parts.reduce((n,p)=>(n<<8n)+BigInt(p),0n);}
+ ensure(s.includes(':')&&!s.includes('%'),'Enter a valid IPv6 address (without a scope ID)');
+ let v=s;
+ if(v.includes('.')){const last=v.lastIndexOf(':');const n=ipNumber(v.slice(last+1),'Ipv4');v=v.slice(0,last+1)+(n>>16n).toString(16)+':'+(n&65535n).toString(16);}
+ const halves=v.split('::');ensure(halves.length<=2,'IPv6 can contain only one ::');
+ const left=halves[0]?halves[0].split(':'):[];const right=halves.length===2&&halves[1]?halves[1].split(':'):[];
+ ensure([...left,...right].every(p=>/^[0-9a-f]{1,4}$/i.test(p)),'Each IPv6 group must contain 1–4 hexadecimal digits');
+ const used=left.length+right.length;ensure(halves.length===2?used<8:used===8,'Incorrect IPv6 address length');
+ const groups=halves.length===2?[...left,...Array(8-used).fill('0'),...right]:left;
+ return groups.reduce((n,p)=>(n<<16n)+BigInt('0x'+p),0n);
+}
+function asnNumber(text){const s=String(text).trim().replace(/^AS\s*/i,'');const p=s.split('.');ensure(p.length<=2,'ASN format: integer, AS65000, or 1.10');return p.length===2?integer(p[0],65535)*65536+integer(p[1],65535):integer(p[0],4294967295);}
+function flags(text){const s=String(text).trim().toUpperCase();if(/^\d+$/.test(s))return integer(s,255);if(/^0X[0-9A-F]+$/.test(s)){ensure(BigInt(s)<=255n,'TCP flags must be within 0–255');return s;}
+ const names=['FIN','SYN','RST','PSH','ACK','URG','ECE','CWR'];ensure(s&&(s.includes('|')?s.split('|').every(p=>names.includes(p.trim())):names.includes(s)||/^[FSRPAUEC]+$/.test(s)),'Enter TCP flags as SA, SYN|ACK, 0x12, or an integer');return s;
+}
+function flagNumber(value){const v=flags(value);if(typeof v==='number')return v;if(v.startsWith('0X'))return Number(BigInt(v));const bits={FIN:1,SYN:2,RST:4,PSH:8,ACK:16,URG:32,ECE:64,CWR:128,F:1,S:2,R:4,P:8,A:16,U:32,E:64,C:128};const parts=v.includes('|')?v.split('|').map(p=>p.trim()):bits[v]? [v]:[...v];return parts.reduce((n,p)=>n|bits[p],0);}
+function maxFor(name,length){if(['SRC_MASK','DST_MASK'].includes(name))return 32;if(['IPV6_SRC_MASK','IPV6_DST_MASK','MPLS_TOP_LABEL_PREFIX_LEN'].includes(name))return 128;if(name==='MPLS_TOP_LABEL_EXP')return 7;return 2**(length*8)-1;}
+function scalar(spec,item,range=false){
+ const [name,,length,kind]=spec;const text=String(item.value).trim();
+ if(kind==='Ipv4'||kind==='Ipv6'){ipNumber(text,kind);return text;}
+ if(kind==='Asn')return asnNumber(text);
+ if(kind==='RouteDistinguisher'){
+  const p=text.split(':');ensure(p.length===2||p.length===3,'RD format: ASN:number or IPv4:number');let type,admin,assigned;
+  if(p.length===3){type=integer(p[0],2);[,admin,assigned]=p;}else{[admin,assigned]=p;type=admin.includes('.')&&admin.split('.').length===4?1:asnNumber(admin)<=65535?0:2;}
+  if(type===1){ipNumber(admin,'Ipv4');admin=admin.trim();}else {admin=asnNumber(admin);ensure(admin<=(type===0?65535:4294967295),'ASN is out of range for this RD type');}const number=integer(assigned,type===0?4294967295:65535);return `${type}:${admin}:${number}`;
+ }
+ if(kind==='MplsLabel'){const label=integer(text,1048575);return range?label:{label,tc:integer(item.tc,7),bos:!!item.bos};}
+ if(kind==='Icmp4'||kind==='Icmp6'){
+  if(range)return integer(text,65535);
+  const allowed=kind==='Icmp4'?['echo-request','echo-reply','destination-unreachable','time-exceeded','parameter-problem']:['echo-request','echo-reply','destination-unreachable','time-exceeded','parameter-problem','packet-too-big'];
+  const type=/^\d+$/.test(text)?integer(text,255):text.toLowerCase();ensure(typeof type==='number'||allowed.includes(type),'Enter a supported ICMP name or a type from 0 to 255');return {type,code:integer(item.code,255)};
+ }
+ if(name==='TCP_FLAGS')return range?flagNumber(text):flags(text);
+ const n=integer(text,maxFor(name,length));if(name==='IP_PROTOCOL_VERSION')ensure(n===4||n===6,'IP protocol version must be 4 or 6');return n;
+}
+function modes(spec){const [name,,,kind]=spec;return ['single','list',...(kind==='RouteDistinguisher'?[]:['range']),...(['Ipv4','Ipv6'].includes(kind)?['prefix']:[]),...(['L4_SRC_PORT','L4_DST_PORT','IN_PKTS','IN_BYTES'].includes(name)?['random']:[]),...(['IN_BYTES','OUT_BYTES'].includes(name)?['calculated']:[])];}
+function fieldValue(row,scope=false,flow){
+ const spec=(scope?SCOPES:FIELD_SPECS).find(s=>s[0]===row.name);ensure(spec,'Unknown field');ensure(modes(spec).includes(row.mode),'This field does not support the selected value mode');const kind=spec[3];
+ if(row.mode==='calculated'){
+  // shortcut: single PKTS only; support other modes when the config can preserve per-record counter pairing.
+  const name=row.name.replace('_BYTES','_PKTS'),packets=flow?.fields.find(r=>r.name===name);
+  ensure(packets,`Add the ${name} field first`);ensure(packets.mode==='single',`${name} must use a single value for the calculation`);
+  const count=integer(packets.single.value,4294967295),average=integer(row.avgPacketSize,4294967295,1);
+  const bytes=BigInt(count)*BigInt(average);ensure(bytes<=4294967295n,'Calculated BYTES exceeds 4294967295; reduce PKTS or the average packet size');
+  return {value:Number(bytes),count:1n};
+ }
+ if(row.mode==='random'){const limit=maxFor(row.name,spec[2]),min=integer(row.min,limit),max=integer(row.max,limit);ensure(min<=max,'Random minimum must not exceed maximum');return {value:{random_between:[min,max]},count:1n};}
+ if(row.mode==='prefix'){
+  const parts=row.prefix.trim().split('/');ensure(parts.length===2,'Enter a CIDR prefix, such as 192.0.2.0/24');ipNumber(parts[0],kind);const width=kind==='Ipv4'?32:128,bits=integer(parts[1],width);let count=1n<<BigInt(width-bits);ensure(count<=MAX_RECORDS,'A single prefix must not exceed 500,000 addresses');ensure(kind==='Ipv4'||!row.hosts,'hosts_only is only supported for IPv4');if(row.hosts&&count>2n)count-=2n;const prefix=`${parts[0].trim()}/${bits}`;return {value:row.hosts?{prefix,hosts_only:true}:prefix,count};
+ }
+ if(row.mode==='range'){
+  // shortcut: step stops at Number.MAX_SAFE_INTEGER; add lossless JSON serialization if larger steps are needed.
+  const start=scalar(spec,{value:row.start},true),end=scalar(spec,{value:row.end},true),step=integer(row.step,Number.MAX_SAFE_INTEGER,1);
+  const number=v=>['Ipv4','Ipv6'].includes(kind)?ipNumber(v,kind):kind==='Asn'?BigInt(asnNumber(v)):BigInt(v);
+  const a=number(start),b=number(end);ensure(a<=b,'range end must not be less than start');const count=(b-a)/BigInt(step)+1n;ensure(count<=MAX_RECORDS,'A single range must not exceed 500,000 values');
+  if(row.name==='IP_PROTOCOL_VERSION')ensure(count===1n||(a===4n&&b===6n&&step===2),'This range must only produce 4 or 6');
+  return {value:{start,end,step},count};
+ }
+ const items=row.mode==='list'?row.items:[row.single];ensure(items.length>0,'At least one value is required');const values=items.map(item=>scalar(spec,item));return {value:row.mode==='list'?values:values[0],count:BigInt(items.length)};
+}
+function templateShape(flow){return JSON.stringify([flow.type,flow.type==='options'?flow.scope.map(r=>r.name):[],flow.fields.map(r=>r.name)]);}
+function build(model){
+ const source_id=integer(model.sourceId,4294967295);ensure(model.flows.length>0,'Add at least one flow');const ids=new Map();let records=0n,packets=0;const warnings=[];
+ const flows=model.flows.map((flow,index)=>{try{
+  const title=`Flow ${index+1}`;const template_id=integer(flow.templateId,65535,256);ensure(flow.fields.length>0,`${title}: at least one regular field is required`);ensure(['normal','options'].includes(flow.type),`${title}: unknown flow type`);ensure(flow.type!=='options'||flow.scope.length>0,`${title}: Options requires at least one scope`);const shape=templateShape(flow);ensure(!ids.has(template_id)||ids.get(template_id)===shape,`${title}: shared templates must have matching scope, field names, order, and lengths`);ids.set(template_id,shape);
+  let count=1n,length=0;
+  const encode=(rows,scope)=>{const seen=new Set();return rows.map((row,rowIndex)=>{try{ensure(!seen.has(row.name),'Duplicate fields are not allowed');seen.add(row.name);const result=fieldValue(row,scope,flow);count*=result.count;ensure(count<=MAX_RECORDS,'Expansion must not exceed 500,000 records');length+=(scope?SCOPES:FIELD_SPECS).find(s=>s[0]===row.name)[2];return {name:row.name,value:result.value};}catch(error){const issue=new Error(`${title} / ${scope?'scope.':''}${row.name}: ${error.message}`);issue.path=`flows.${index}.${scope?'scope':'fields'}.${rowIndex}`;throw issue;}});};
+  const scope=flow.type==='options'?encode(flow.scope,true):[];const fields=encode(flow.fields,false);records+=count;ensure(records<=MAX_RECORDS,'Total expansion across all flows must not exceed 500,000 records');
+  const descriptor=(scope.length?6:4)+(scope.length+fields.length)*4;ensure(24+descriptor+(4-descriptor%4)%4<=1400,`${title}: template description exceeds 1400 bytes`);
+  let capacity=Math.floor((1400-24)/length);const padding=n=>{const p=(4-n%4)%4;return p<length?p:0;};while(capacity&&24+capacity*length+padding(capacity*length)>1400)capacity--;ensure(capacity>0,`${title}: a single record exceeds 1400 bytes`);packets+=Math.ceil(Number(count)/capacity);
+  const protocol=fields.find(f=>f.name==='PROTOCOL');if(protocol&&[1,58].includes(protocol.value)&&fields.some(f=>['L4_SRC_PORT','L4_DST_PORT'].includes(f.name)))warnings.push(`${title}: ICMP has no TCP/UDP ports; check the record field semantics.`);
+  return {template_id,...(scope.length?{scope}:{}),fields};
+ }catch(error){error.path??=`flows.${index}`;throw error;}});
+ const config={source_id,flows};const json=JSON.stringify(config,null,2);ensure(new TextEncoder().encode(json).length<=8*1024*1024,'Configuration file must not exceed 8 MiB');return {config,json,templates:ids.size,records:Number(records),packets,warnings};
+}
+const DEFAULTS={IPV4_SRC_ADDR:'192.0.2.1',IPV4_DST_ADDR:'198.51.100.2',IPV4_NEXT_HOP:'192.0.2.254',BGP_IPV4_NEXT_HOP:'192.0.2.254',IPV6_SRC_ADDR:'2001:db8::1',IPV6_DST_ADDR:'2001:db8:1::1',IPV6_NEXT_HOP:'2001:db8::ffff',BGP_IPV6_NEXT_HOP:'2001:db8::ffff',L4_SRC_PORT:'12345',L4_DST_PORT:'443',PROTOCOL:'6',TCP_FLAGS:'SA',IN_BYTES:'1000',IN_PKTS:'10',SRC_AS:'AS65000',DST_AS:'AS65001',MPLS_VPN_RD:'65000:100',ICMP_TYPE:'echo-request',ICMP_TYPE_IPV6:'echo-request',IP_PROTOCOL_VERSION:'4',SAMPLING_INTERVAL:'100',SAMPLING_ALGORITHM:'1',MPLS_TOP_LABEL_IP_ADDR:'192.0.2.254',MPLS_TOP_LABEL_IPV6_ADDR:'2001:db8::ffff'};
+function makeRow(name,initial){const spec=FIELD_SPECS.find(s=>s[0]===name);const value=String(initial??DEFAULTS[name]??(spec?.[3]==='MplsLabel'?'16000':'0'));return {name,mode:'single',...(['IN_BYTES','OUT_BYTES'].includes(name)?{avgPacketSize:'100'}:{}),single:{value,tc:'0',bos:false,code:'0'},items:[{value,tc:'0',bos:false,code:'0'}],start:value,end:value,step:'1',prefix:spec?.[3]==='Ipv6'?'2001:db8::/126':'192.0.2.0/30',hosts:false,min:'49152',max:'65535'};}
+function makeFlow(preset,id){
+ let names=['IPV4_SRC_ADDR','IPV4_DST_ADDR','L4_SRC_PORT','L4_DST_PORT','PROTOCOL','TCP_FLAGS','IN_BYTES','IN_PKTS'];
+ if(preset==='tcp6')names=names.map(n=>n.replace('IPV4_','IPV6_'));
+ if(preset==='icmp4')names=['IPV4_SRC_ADDR','IPV4_DST_ADDR','PROTOCOL','ICMP_TYPE','IN_BYTES','IN_PKTS'];
+ if(preset==='icmp6')names=['IPV6_SRC_ADDR','IPV6_DST_ADDR','PROTOCOL','ICMP_TYPE_IPV6','IN_BYTES','IN_PKTS'];
+ if(preset==='options')names=['SAMPLING_INTERVAL','SAMPLING_ALGORITHM'];
+ if(preset==='mpls')names=['IPV4_SRC_ADDR','IPV4_DST_ADDR','MPLS_LABEL_1','MPLS_VPN_RD'];
+ if(preset==='custom')names=['PROTOCOL'];
+ const flow={templateId:String(id),type:preset==='options'?'options':'normal',scope:preset==='options'?[makeRow('SYSTEM','1')]:[],fields:names.map(n=>makeRow(n))};
+ if(preset==='icmp4'||preset==='icmp6')flow.fields.find(r=>r.name==='PROTOCOL').single.value=preset==='icmp4'?'1':'58';
+ if(preset==='mpls')flow.fields.find(r=>r.name==='MPLS_LABEL_1').single.bos=true;
+ return flow;
+}
+function validationErrors(model){
+ const errors=[];
+ const check=(path,fn)=>{try{fn();}catch(error){errors.push({path,message:error.message});}};
+ check('sourceId',()=>integer(model.sourceId,4294967295));
+ check('flows',()=>ensure(model.flows.length>0,'Add at least one flow'));
+ const ids=new Map();
+ model.flows.forEach((flow,i)=>{
+  const path=`flows.${i}`;
+  check(path+'.templateId',()=>{const id=integer(flow.templateId,65535,256);const shape=templateShape(flow);ensure(!ids.has(id)||ids.get(id)===shape,'Shared templates must have matching scope, field names, order, and lengths');ids.set(id,shape);});
+  check(path,()=>{ensure(flow.fields.length>0,'At least one regular field is required');ensure(flow.type!=='options'||flow.scope.length>0,'Options requires at least one scope');});
+  for(const zone of flow.type==='options'?['scope','fields']:['fields']){
+   const names=new Set();flow[zone].forEach((row,j)=>check(`${path}.${zone}.${j}`,()=>{ensure(!names.has(row.name),'Duplicate fields are not allowed');names.add(row.name);fieldValue(row,zone==='scope',flow);}));
+  }
+ });
+ if(!errors.length){try{build(model);}catch(error){errors.push({path:error.path||'flows',message:error.message});}}
+ return errors;
+}
+function fieldGroup(spec,scope=false){
+ if(scope)return 'Options scope';const [name,,,kind]=spec;
+ if(name.startsWith('MPLS_'))return 'MPLS';
+ if(['INPUT_SNMP','OUTPUT_SNMP'].includes(name))return 'Interface';
+ if(name.startsWith('SAMPLING_'))return 'Sampling';
+ if(kind==='Asn')return 'ASN';
+ if(kind.startsWith('Icmp'))return 'ICMP';
+ if(['L4_SRC_PORT','L4_DST_PORT','TCP_FLAGS','PROTOCOL'].includes(name))return 'Port / Protocol';
+ if(kind==='Ipv4'||kind==='Ipv6'||/MASK|TOS|IP_PROTOCOL_VERSION/.test(name))return 'IP';
+ return 'Counters / Time';
+}
+function matchingFields(registry,query='',category='',scope=false){
+ const text=query.trim().toLowerCase();return registry.filter(spec=>(!category||fieldGroup(spec,scope)===category)&&(!text||`${spec[0]} ${LABELS[spec[0]]||''} ${fieldGroup(spec,scope)}`.toLowerCase().includes(text)));
+}
+function nextTemplateId(flows){const ids=new Set(flows.map(flow=>Number(flow.templateId)));let id=256;while(ids.has(id)&&id<=65535)id++;ensure(id<=65535,'No available template ID');return id;}
+function duplicateFlow(model,index,shared=false){const flow=JSON.parse(JSON.stringify(model.flows[index]));if(!shared)flow.templateId=String(nextTemplateId(model.flows));model.flows.splice(index+1,0,flow);}
+function moveRow(rows,index,direction){const target=index+direction;if(target>=0&&target<rows.length)[rows[index],rows[target]]=[rows[target],rows[index]];}
+function knownKeys(value,keys,title){ensure(value!==null&&typeof value==='object'&&!Array.isArray(value),`${title} must be an object`);for(const key of Object.keys(value))ensure(keys.includes(key),`${title}: unsupported ${key}; nothing was imported`);}
+function importConfig(text){
+ ensure(new TextEncoder().encode(text).length<=8*1024*1024,'Configuration file must not exceed 8 MiB');
+ const config=JSON.parse(text);knownKeys(config,['source_id','flows'],'Configuration');
+ ensure(config.source_id===undefined||typeof config.source_id==='number','source_id must be an integer');
+ ensure(Array.isArray(config.flows),'flows must be an array');
+ function rowFrom(field,scope,title){
+  knownKeys(field,['name','value'],title);ensure(typeof field.name==='string',`${title} is missing name`);
+  const name=field.name.toUpperCase(),spec=(scope?SCOPES:FIELD_SPECS).find(s=>s[0]===name);ensure(spec,`${title}: unknown field ${name}`);
+  ensure(Object.hasOwn(field,'value'),`${title} is missing value`);const value=field.value,row=makeRow(name),kind=spec[3];
+  function item(v){
+   const result={value:'',tc:'0',bos:false,code:'0'};
+   if(kind==='MplsLabel'&&v!==null&&typeof v==='object'&&!Array.isArray(v)){
+    knownKeys(v,['label','tc','bos'],title);ensure(typeof v.label==='number',`${title} label must be an integer`);ensure(v.tc===undefined||typeof v.tc==='number',`${title} tc must be an integer`);ensure(v.bos===undefined||typeof v.bos==='boolean',`${title} bos must be a boolean`);
+    Object.assign(result,{value:String(v.label),tc:String(v.tc??0),bos:v.bos??false});
+   }else if(kind==='Icmp4'||kind==='Icmp6'){
+    if(v!==null&&typeof v==='object'&&!Array.isArray(v)){
+     knownKeys(v,['type','code'],title);ensure(typeof v.type==='string'||typeof v.type==='number',`${title} is missing ICMP type`);ensure(v.code===undefined||typeof v.code==='number',`${title} code must be an integer`);
+     Object.assign(result,{value:String(v.type),code:String(v.code??0)});
+    }else if(typeof v==='number'){
+     integer(v,65535);Object.assign(result,{value:String(v>>8),code:String(v&255)});
+    }else {ensure(typeof v==='string',`${title} has an invalid ICMP value`);result.value=v;}
+   }else {ensure(typeof v==='string'||typeof v==='number',`${title} value must be a string or integer`);result.value=String(v);}
+   return result;
+  }
+  if(Array.isArray(value)){row.mode='list';row.items=value.map(item);}
+  else if((kind==='Ipv4'||kind==='Ipv6')&&typeof value==='string'&&value.includes('/')){row.mode='prefix';row.prefix=value;}
+  else if(value!==null&&typeof value==='object'){
+   if(Object.hasOwn(value,'prefix')||Object.hasOwn(value,'hosts_only')){
+    knownKeys(value,['prefix','hosts_only'],title);ensure(typeof value.prefix==='string',`${title} is missing prefix`);ensure(value.hosts_only===undefined||typeof value.hosts_only==='boolean',`${title} hosts_only must be a boolean`);Object.assign(row,{mode:'prefix',prefix:value.prefix,hosts:value.hosts_only??false});
+   }else if(Object.hasOwn(value,'random_between')){
+    knownKeys(value,['random_between'],title);ensure(Array.isArray(value.random_between)&&value.random_between.length===2&&value.random_between.every(n=>typeof n==='number'),`${title} random_between must contain two integers`);Object.assign(row,{mode:'random',min:String(value.random_between[0]),max:String(value.random_between[1])});
+   }else if(Object.hasOwn(value,'random')){
+    ensure(['L4_SRC_PORT','L4_DST_PORT'].includes(name),`${title}: random is only supported for L4 ports; use random_between`);knownKeys(value,['random','min','max'],title);ensure(value.random===true,`${title} random must be true`);ensure((value.min===undefined||typeof value.min==='number')&&(value.max===undefined||typeof value.max==='number'),`${title} min/max must be integers`);Object.assign(row,{mode:'random',min:String(value.min??1),max:String(value.max??65535)});
+   }else if(['start','end','step'].some(key=>Object.hasOwn(value,key))){
+    knownKeys(value,['start','end','step'],title);if(kind==='Icmp4'||kind==='Icmp6')ensure(typeof value.start==='number'&&typeof value.end==='number',`${title}: ICMP range endpoints must be combined integers; use the CLI to read the original configuration. Nothing was imported`);ensure(['string','number'].includes(typeof value.start)&&['string','number'].includes(typeof value.end),`${title}: form range endpoints must be strings or integers; nothing was imported`);ensure(value.step===undefined||typeof value.step==='number',`${title} step must be an integer`);Object.assign(row,{mode:'range',start:String(value.start),end:String(value.end),step:String(value.step??1)});
+   }else row.single=item(value);
+  }else row.single=item(value);
+  return row;
+ }
+ const model={sourceId:String(config.source_id??0),flows:config.flows.map((flow,i)=>{
+  const title=`Flow ${i+1}`;knownKeys(flow,['template_id','scope','fields'],title);ensure(typeof flow.template_id==='number',`${title} is missing template_id`);
+  ensure(flow.scope===undefined||Array.isArray(flow.scope),`${title} scope must be an array`);ensure(flow.fields===undefined||Array.isArray(flow.fields),`${title} fields must be an array`);
+  return {templateId:String(flow.template_id),type:flow.scope?.length?'options':'normal',scope:(flow.scope??[]).map((f,j)=>rowFrom(f,true,`${title} scope[${j}]`)),fields:(flow.fields??[]).map((f,j)=>rowFrom(f,false,`${title} fields[${j}]`))};
+ })};
+ // Reject rounded u64 steps and other unsafe JSON integers before they can change a setting.
+ function safeNumbers(v){if(typeof v==='number')ensure(Number.isSafeInteger(v),'Contains integers that cannot be represented exactly; use the CLI to read the original configuration');else if(v&&typeof v==='object')Object.values(v).forEach(safeNumbers);}
+ safeNumbers(config);build(model);return model;
+}
+function readDraft(text){
+ ensure(new TextEncoder().encode(text).length<=8*1024*1024,'Draft must not exceed 8 MiB');
+ const saved=JSON.parse(text);knownKeys(saved,['version','model'],'Draft');ensure(saved.version===1,'Unsupported draft version');
+ const model=saved.model;knownKeys(model,['sourceId','flows'],'Draft form');ensure(typeof model.sourceId==='string'&&Array.isArray(model.flows),'Invalid draft form');
+ model.flows.forEach(flow=>{
+  knownKeys(flow,['templateId','type','scope','fields'],'Draft flow');ensure(typeof flow.templateId==='string'&&['normal','options'].includes(flow.type),'Invalid draft flow');
+  for(const zone of ['scope','fields']){
+   ensure(Array.isArray(flow[zone]),'Invalid draft field');flow[zone].forEach(row=>{
+    const spec=(zone==='scope'?SCOPES:FIELD_SPECS).find(s=>s[0]===row.name);ensure(spec&&modes(spec).includes(row.mode),'Draft contains an unknown field or mode');
+    knownKeys(row,Object.keys(makeRow(row.name)),'Draft field');
+    if(Object.hasOwn(row,'avgPacketSize'))ensure(typeof row.avgPacketSize==='string','Invalid draft average packet size');
+    for(const key of ['start','end','step','prefix','min','max'])ensure(typeof row[key]==='string','Invalid draft field');
+    ensure(typeof row.hosts==='boolean'&&Array.isArray(row.items),'Invalid draft value');
+    for(const item of [row.single,...row.items]){knownKeys(item,['value','tc','bos','code'],'Draft value');ensure(['value','tc','code'].every(key=>typeof item[key]==='string')&&typeof item.bos==='boolean','Invalid draft value');}
+   });
+  }
+ });return model;
+}
+globalThis.NfgenBuilder={FIELD_SPECS,SCOPES,makeRow,makeFlow,build,ipNumber,validationErrors,matchingFields,fieldGroup,importConfig,duplicateFlow,moveRow,readDraft};
+if(typeof document!=='undefined'){
+ let model={sourceId:'42',flows:[makeFlow('tcp4',256)]},result=null,dirty=false,revision=0;
+ const DRAFT_KEY='nfgen.builder.draft.v1';
+ const $=id=>document.getElementById(id);
+ const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function input(label,path,value,kind='text'){return `<label class="control">${label}<input type="text" ${kind==='number'?'inputmode="numeric"':''} data-path="${path}" value="${escape(value)}" autocomplete="off"></label>`;}
+ function check(label,path,value){return `<label class="check"><input type="checkbox" data-path="${path}" ${value?'checked':''}>${label}</label>`;}
+ function fieldHelp(spec,scope){
+  const [name,,length,kind]=spec;
+  if(scope)return name==='INTERFACE'?'Interface index (ifIndex) to which these options apply; not a device name such as eth0.':'Options scope identifies what the options apply to, separately from regular flow fields.';
+  if(['INPUT_SNMP','OUTPUT_SNMP'].includes(name))return `${name==='INPUT_SNMP'?'Input':'Output'} interface index (ifIndex): 0–4294967295. This is not a name such as eth0 and does not select the sending interface.`;
+  if(kind==='Ipv4'||kind==='Ipv6')return kind==='Ipv4'?'Addresses ending in .0 are valid. In IP prefix mode, 1.1.1.0/32 produces one address. Mask fields are not added automatically.':'IPv6 supports single addresses, ranges, and IP prefixes; /128 produces one address.';
+  if(name.startsWith('L4_'))return 'Port in the record (0–65535); does not change the actual UDP source or destination port.';
+  if(['FIRST_SWITCHED','LAST_SWITCHED'].includes(name))return 'Milliseconds since exporter startup; this configured value does not update automatically during sending.';
+  if(kind==='Asn')return 'Accepts an integer, AS65000, or 1.10; exports the equivalent integer ASN.';
+  if(kind.startsWith('Icmp'))return 'Enter Type and Code separately; ranges use the combined integer type × 256 + code.';
+  if(kind==='MplsLabel')return 'Label is a 20-bit value; TC is 0–7. BoS marks the bottom of the stack.';
+  if(kind==='RouteDistinguisher')return 'VPN identifier, such as 65000:100 or 192.0.2.1:100; an explicit type of 0, 1, or 2 is optional.';
+  if(['IN_BYTES','OUT_BYTES'].includes(name))return 'Enter a value manually or select Calculate from PKTS to multiply packets in the same direction by the average packet size.';
+  if(['IN_PKTS','OUT_PKTS'].includes(name))return 'Packet count (0–4294967295). BYTES in the same direction can use Calculate from PKTS; this field must then use a single value.';
+  if(name==='TCP_FLAGS')return 'Accepts SA, SYN|ACK, 0x12, or the integer 18.';
+  return `${length} bytes; integer range 0–${maxFor(name,length)}${name==='IP_PROTOCOL_VERSION'?'; this field accepts only 4 or 6':''}.`;
+ }
+ function scalarInputs(row,item,path,spec){const kind=spec[3];if(kind==='MplsLabel')return `<div class="grid three">${input('Label (0–1048575)',path+'.value',item.value,'number')}${input('TC (0–7)',path+'.tc',item.tc,'number')}${check('Bottom of stack (BoS)',path+'.bos',item.bos)}</div>`;if(kind==='Icmp4'||kind==='Icmp6')return `<div class="grid">${input('Type (name or 0–255)',path+'.value',item.value)}${input('Code (0–255)',path+'.code',item.code,'number')}</div>`;return input(kind==='Asn'?'ASN (integer, AS65000, 1.10)':kind==='RouteDistinguisher'?'RD (65000:100, 192.0.2.1:100)':row.name==='TCP_FLAGS'?'Flags (SA, SYN|ACK, 0x12)':kind==='Ipv4'?'IPv4 address':kind==='Ipv6'?'IPv6 address':'Value',path+'.value',item.value,kind==='Number'&&row.name!=='TCP_FLAGS'?'number':'text');}
+ function optionsHtml(registry,row,used,scope,query='',category=''){
+  const matches=matchingFields(registry,query,category,scope),groups=[...new Set(registry.map(s=>fieldGroup(s,scope)))];
+  return `<option value="${row.name}" selected>${escape(LABELS[row.name]||row.name)} · ${row.name} (current)</option>`+groups.map(group=>{const specs=matches.filter(s=>fieldGroup(s,scope)===group&&s[0]!==row.name);return specs.length?`<optgroup label="${group}">${specs.map(s=>`<option value="${s[0]}" ${used.includes(s[0])?'disabled':''}>${escape(LABELS[s[0]]||s[0])} · ${s[0]}</option>`).join('')}</optgroup>`:'';}).join('');
+ }
+ function rowHtml(row,i,zone,j){
+  const scope=zone==='scope',registry=scope?SCOPES:FIELD_SPECS,spec=registry.find(s=>s[0]===row.name),path=`flows.${i}.${zone}.${j}`,used=model.flows[i][zone].map(r=>r.name),groups=[...new Set(registry.map(s=>fieldGroup(s,scope)))];
+  const labels={single:'Single value',list:'Multiple values',range:'Range',prefix:'IP prefix',random:'Random between',calculated:'Calculate from PKTS'};
+  let values='';if(row.mode==='single')values=scalarInputs(row,row.single,path+'.single',spec);
+  if(row.mode==='calculated')values=`${input('Average packet size (bytes / packet, positive integer)',path+'.avgPacketSize',row.avgPacketSize??'100','number')}<p class="hint">${row.name.replace('_BYTES','_PKTS')} × average packet size → ${row.name}. Set PKTS to a single value; changes recalculate automatically.</p><output class="tag" data-derived-flow="${i}" data-derived-row="${j}" aria-live="polite"></output>`;
+  if(row.mode==='list')values=row.items.map((item,k)=>`<div class="scalar"><div class="scalar-line"><div style="flex:1;min-width:0">${scalarInputs(row,item,path+'.items.'+k,spec)}</div><button class="btn subtle" type="button" data-action="remove-value" data-i="${i}" data-zone="${zone}" data-j="${j}" data-k="${k}" aria-label="Remove value ${k+1}">Remove</button></div></div>`).join('')+`<button class="btn small" type="button" data-action="add-value" data-i="${i}" data-zone="${zone}" data-j="${j}">+ Add value</button>`;
+  if(row.mode==='range')values=`<div class="grid three">${input('Start',path+'.start',row.start)}${input('End',path+'.end',row.end)}${input('Step',path+'.step',row.step,'number')}</div><p class="hint">Increment from start by step without exceeding end. Multiple values across fields form a Cartesian product.</p>`;
+  if(row.mode==='prefix')values=`${input('CIDR prefix',path+'.prefix',row.prefix)}${spec[3]==='Ipv4'?check('Hosts only (/31 and /32 keep all addresses)',path+'.hosts',row.hosts):''}<p class="hint">${spec[3]==='Ipv4'?'/32 produces one IPv4 address, including .0. /24 includes 256 addresses by default; hosts only excludes the network and broadcast addresses.':'/128 produces one IPv6 address; IPv6 prefixes include all addresses in the range.'}</p>`;
+  if(row.mode==='random')values=`<div class="grid">${input('Minimum (inclusive)',path+'.min',row.min,'number')}${input('Maximum (inclusive)',path+'.max',row.max,'number')}</div><p class="hint">Resampled per record on every send; duplicates are allowed. Does not increase configured expansion.</p>`;
+  return `<div class="field" data-error-path="${path}"><div class="field-search"><div class="grid"><label class="control">Search fields<input type="search" data-filter="query" data-row="${path}" placeholder="e.g., interface, port, IPV4"></label><label class="control">Field category<select data-filter="category" data-row="${path}"><option value="">All categories</option>${groups.map(g=>`<option>${g}</option>`).join('')}</select></label></div><span class="hint" data-match-count></span></div><div class="field-top"><label class="control">Field<select data-select="name" data-i="${i}" data-zone="${zone}" data-j="${j}" aria-label="Flow ${i+1}, ${zone} field ${j+1}">${optionsHtml(registry,row,used,scope)}</select></label><label class="control">Value mode<select data-select="mode" data-i="${i}" data-zone="${zone}" data-j="${j}">${modes(spec).map(m=>`<option value="${m}" ${m===row.mode?'selected':''}>${labels[m]}</option>`).join('')}</select></label><button class="btn subtle" type="button" data-action="remove-field" data-i="${i}" data-zone="${zone}" data-j="${j}" aria-label="Remove ${escape(row.name)}">✕</button></div><p class="hint field-help">${fieldHelp(spec,scope)}</p><div class="field-values">${values}</div><p class="error-message" id="error-${path.replaceAll('.','-')}"></p><div class="row-actions"><button class="btn small" type="button" data-action="up" data-i="${i}" data-zone="${zone}" data-j="${j}" ${j===0?'disabled':''} aria-label="Move ${row.name} up">↑ Move up</button><button class="btn small" type="button" data-action="down" data-i="${i}" data-zone="${zone}" data-j="${j}" ${j===model.flows[i][zone].length-1?'disabled':''} aria-label="Move ${row.name} down">↓ Move down</button><span class="hint">Field order determines packet encoding order.</span></div></div>`;
+ }
+ function render(){
+  $('source-id').value=model.sourceId;
+  $('flows').innerHTML=model.flows.map((flow,i)=>`<article class="panel" data-error-path="flows.${i}"><div class="panel-head"><h2><span class="flow-number">${String(i+1).padStart(2,'0')}</span>Flow Configuration</h2><div class="toolbar"><button class="btn small" type="button" data-action="duplicate-flow" data-i="${i}">Duplicate flow</button><button class="btn small" type="button" data-action="duplicate-shared-flow" data-i="${i}">Duplicate with shared template</button><button class="btn subtle" type="button" data-action="remove-flow" data-i="${i}" aria-label="Remove flow ${i+1}">Remove flow</button></div></div><div class="panel-body"><div class="grid"><div data-error-path="flows.${i}.templateId">${input('Template ID (256–65535)',`flows.${i}.templateId`,flow.templateId,'number')}<p class="hint">Flows with the same ID can share a template. Scope, fields, and order must match; values expand independently for each flow.</p><p class="error-message" id="error-template-${i}"></p></div><label class="control">Template type<select data-select="type" data-i="${i}"><option value="normal" ${flow.type==='normal'?'selected':''}>Regular flow</option><option value="options" ${flow.type==='options'?'selected':''}>Options</option></select></label></div><p class="error-message" id="error-flow-${i}"></p>${flow.type==='options'?`<div class="scope-box"><div class="flow-tools"><span class="section-label">Options scope</span><button class="btn small" type="button" data-action="add-field" data-i="${i}" data-zone="scope" ${flow.scope.length>=SCOPES.length?'disabled':''}>+ Add scope</button></div>${flow.scope.map((r,j)=>rowHtml(r,i,'scope',j)).join('')}</div>`:''}<div class="flow-tools"><span class="section-label">Record fields <span class="small">${flow.fields.length}</span></span><button class="btn small" type="button" data-action="add-field" data-i="${i}" data-zone="fields" ${flow.fields.length>=FIELD_SPECS.length?'disabled':''}>+ Add field</button></div>${flow.fields.map((r,j)=>rowHtml(r,i,'fields',j)).join('')||'<p class="empty">Add at least one field.</p>'}</div></article>`).join('')||'<p class="empty">Choose a preset and add your first flow.</p>';
+  refresh();
+ }
+ function showErrors(errors){
+  document.querySelectorAll('[data-error-path]').forEach(el=>el.classList.remove('has-error'));
+  document.querySelectorAll('.error-message:not(#import-error)').forEach(el=>el.textContent='');
+  document.querySelectorAll('[data-path],select[data-select]').forEach(el=>{el.removeAttribute('aria-invalid');el.removeAttribute('aria-describedby');});
+  for(const issue of errors){
+   const el=document.querySelector(`[data-error-path="${issue.path}"]`);if(!el)continue;
+   el.classList.add('has-error');
+   const message=issue.path==='sourceId'?$('source-error'):/^flows\.\d+$/.test(issue.path)?$(`error-flow-${issue.path.split('.')[1]}`):el.querySelector('.error-message');
+   if(message){message.textContent=issue.message;el.querySelectorAll('[data-path],select[data-select]').forEach(input=>{input.setAttribute('aria-invalid','true');input.setAttribute('aria-describedby',message.id);});}
+  }
+  $('jump-error').hidden=!errors.length;
+ }
+ function refresh(){
+  const errors=validationErrors(model);showErrors(errors);
+  document.querySelectorAll('[data-derived-row]').forEach(el=>{const flow=model.flows[Number(el.dataset.derivedFlow)];try{el.textContent=`= ${fieldValue(flow.fields[Number(el.dataset.derivedRow)],false,flow).value.toLocaleString('en-US')} bytes`;}catch{el.textContent='No valid calculation yet';}});
+  if(errors.length){result=null;$('json-output').textContent='Fix the configuration first\n\n'+errors.map(e=>e.message).join('\n');$('json-output').setAttribute('aria-invalid','true');for(const id of ['templates-stat','records-stat','packets-stat'])$(id).textContent='—';$('status').textContent=`● ${errors.length} errors`;$('status').className='status error';$('warnings').textContent='';$('download').disabled=true;$('copy').disabled=true;return;}
+  result=build(model);$('json-output').textContent=result.json;$('json-output').setAttribute('aria-invalid','false');$('templates-stat').textContent=result.templates;$('records-stat').textContent=result.records.toLocaleString('en-US');$('packets-stat').textContent=result.packets.toLocaleString('en-US');$('status').textContent='● Ready to download';$('status').className='status';$('warnings').textContent=result.warnings.join('\n');$('download').disabled=false;$('copy').disabled=false;
+ }
+ function saveDraft(){
+  if(!$('save-draft').checked)return;
+  try{const text=JSON.stringify({version:1,model});ensure(new TextEncoder().encode(text).length<=8*1024*1024,'Draft exceeds 8 MiB');localStorage.setItem(DRAFT_KEY,text);$('restore-draft').disabled=false;$('delete-draft').disabled=false;$('draft-status').textContent='Draft saved in this browser; downloading a JSON backup is still recommended.';}
+  catch(error){$('draft-status').textContent='Failed to save draft; download a JSON backup: '+error.message;}
+ }
+ function changed(){dirty=true;revision++;$('notice').textContent='';saveDraft();}
+ function setPath(path,value){const parts=path.split('.');let target=model;for(const part of parts.slice(0,-1))target=target[part];target[parts.at(-1)]=value;}
+ function filterFields(el){
+  const box=el.closest('.field'),parts=el.dataset.row.split('.'),i=Number(parts[1]),zone=parts[2],row=model.flows[i][zone][Number(parts[3])],registry=zone==='scope'?SCOPES:FIELD_SPECS;
+  const query=box.querySelector('[data-filter="query"]').value,category=box.querySelector('[data-filter="category"]').value;
+  box.querySelector('[data-select="name"]').innerHTML=optionsHtml(registry,row,model.flows[i][zone].map(r=>r.name),zone==='scope',query,category);
+  box.querySelector('[data-match-count]').textContent=`${matchingFields(registry,query,category,zone==='scope').length} matching fields; the current field is retained.`;
+ }
+ document.addEventListener('input',event=>{const el=event.target;if(el.dataset.filter){filterFields(el);return;}if(el.dataset.path){setPath(el.dataset.path,el.type==='checkbox'?el.checked:el.value);changed();refresh();}});
+ document.addEventListener('change',event=>{
+  const el=event.target;if(el.dataset.filter){filterFields(el);return;}if(!el.dataset.select)return;
+  const i=Number(el.dataset.i),flow=model.flows[i],zone=el.dataset.zone,j=Number(el.dataset.j);
+  if(el.dataset.select==='type'){flow.type=el.value;if(flow.type==='options'&&!flow.scope.length)flow.scope=[makeRow('SYSTEM','1')];}
+  else if(el.dataset.select==='name')flow[zone][j]=makeRow(el.value);
+  else {const row=flow[zone][j];if(row.mode==='single'&&el.value==='list')row.items=[{...row.single}];row.mode=el.value;if(row.mode==='calculated')row.avgPacketSize??='100';}
+  changed();render();
+ });
+ $('flows').addEventListener('click',event=>{
+  const button=event.target.closest('button[data-action]');if(!button)return;
+  const {action,zone}=button.dataset,i=Number(button.dataset.i),j=Number(button.dataset.j),flow=model.flows[i];
+  try{
+   if(action==='duplicate-flow'||action==='duplicate-shared-flow')duplicateFlow(model,i,action==='duplicate-shared-flow');
+   if(action==='remove-flow')model.flows.splice(i,1);
+   if(action==='remove-field')flow[zone].splice(j,1);
+   if(action==='up'||action==='down')moveRow(flow[zone],j,action==='up'?-1:1);
+   if(action==='add-field'){const name=(zone==='scope'?SCOPES:FIELD_SPECS).find(s=>!flow[zone].some(r=>r.name===s[0]))?.[0];if(name)flow[zone].push(makeRow(name));}
+   if(action==='add-value')flow[zone][j].items.push({...flow[zone][j].single});
+   if(action==='remove-value')flow[zone][j].items.splice(Number(button.dataset.k),1);
+   changed();render();
+   if(action==='up'||action==='down'){const at=j+(action==='up'?-1:1);document.querySelector(`[data-error-path="flows.${i}.${zone}.${at}"] [data-action="${action}"]`)?.focus();}
+  }catch(error){$('notice').textContent=error.message;}
+ });
+ $('add-flow').addEventListener('click',()=>{try{model.flows.push(makeFlow($('new-preset').value,nextTemplateId(model.flows)));changed();render();}catch(error){$('notice').textContent=error.message;}});
+ $('jump-error').addEventListener('click',()=>{
+  const el=document.querySelector('input[aria-invalid="true"],select[aria-invalid="true"],.has-error')||$('add-flow');el.scrollIntoView({block:'center'});(el.matches('input,select,button')?el:el.querySelector('input,select,button'))?.focus();
+ });
+ function replaceModel(next,message){
+  if(dirty&&!window.confirm('You have changes that have not been downloaded. Replace the form with the new content?'))return false;
+  model=next;changed();render();$('notice').textContent=message;return true;
+ }
+ $('import-json').addEventListener('click',()=>{try{const next=importConfig($('import-text').value);if(replaceModel(next,'JSON imported. Review it before downloading.'))$('import-error').textContent='';}catch(error){$('import-error').textContent=error.message;}});
+ $('import-file').addEventListener('change',async event=>{
+  const file=event.target.files[0];if(!file)return;const at=revision;
+  try{ensure(file.size<=8*1024*1024,'Configuration file must not exceed 8 MiB');const text=await file.text();ensure(revision===at,'The form changed while the file was being read; select the file again');const next=importConfig(text);if(replaceModel(next,`Imported ${file.name}. Review it before downloading.`)){$('import-text').value=text;$('import-error').textContent='';}}
+  catch(error){$('import-error').textContent=error.message;}finally{event.target.value='';}
+ });
+ $('save-draft').addEventListener('change',()=>{if($('save-draft').checked)saveDraft();else $('draft-status').textContent='Autosave is off. The existing draft is retained and can be restored or deleted.';});
+ $('restore-draft').addEventListener('click',()=>{try{const text=localStorage.getItem(DRAFT_KEY);ensure(text,'No draft to restore');replaceModel(readDraft(text),'Draft restored. Review it before downloading.');}catch(error){$('draft-status').textContent='Failed to restore draft: '+error.message;}});
+ $('delete-draft').addEventListener('click',()=>{try{localStorage.removeItem(DRAFT_KEY);$('save-draft').checked=false;$('restore-draft').disabled=true;$('delete-draft').disabled=true;$('draft-status').textContent='Draft deleted and autosave disabled. The current form is retained.';}catch(error){$('draft-status').textContent='Failed to delete draft: '+error.message;}});
+ window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
+ $('download').addEventListener('click',()=>{
+  if(!result)return;
+  const url=URL.createObjectURL(new Blob([result.json+'\n'],{type:'application/json;charset=utf-8'})),anchor=document.createElement('a');anchor.href=url;anchor.download='nfgen.json';document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);dirty=false;$('notice').textContent='nfgen.json is ready to download. Confirm the file is saved before closing this page.';
+ });
+ $('copy').addEventListener('click',async()=>{
+  if(!result)return;try{if(!navigator.clipboard?.writeText)throw new Error('clipboard unavailable');await navigator.clipboard.writeText(result.json);$('notice').textContent='JSON copied. Download it to keep a file.';}
+  catch{const selection=window.getSelection(),range=document.createRange();range.selectNodeContents($('json-output'));selection.removeAllRanges();selection.addRange(range);$('notice').textContent='Clipboard access is restricted. JSON is selected; press Ctrl+C / ⌘C or download it.';$('json-output').focus();}
+ });
+ try{if(localStorage.getItem(DRAFT_KEY)){$('restore-draft').disabled=false;$('delete-draft').disabled=false;$('draft-status').textContent='A local draft is available. Select Restore draft to load it. Autosave is off.';}}catch{$('draft-status').textContent='Browser storage is unavailable. Download a JSON backup instead.';}
+ render();
+}
+
+</script>
+</body>
+</html>

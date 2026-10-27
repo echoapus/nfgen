@@ -1,0 +1,16 @@
+{
+  "source_id": 42,
+  "flows": [
+    {
+      "template_id": 300,
+      "scope": [
+        {"name": "INTERFACE", "value": 1},
+        {"name": "LINE_CARD", "value": 2}
+      ],
+      "fields": [
+        {"name": "SAMPLING_INTERVAL", "value": 100},
+        {"name": "SAMPLING_ALGORITHM", "value": 1}
+      ]
+    }
+  ]
+}

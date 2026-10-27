@@ -1,0 +1,19 @@
+{
+  "source_id": 42,
+  "flows": [
+    {
+      "template_id": 700,
+      "fields": [
+        {"name": "IPV4_NEXT_HOP", "value": "192.0.2.1"},
+        {"name": "BGP_IPV4_NEXT_HOP", "value": "192.0.2.254"}
+      ]
+    },
+    {
+      "template_id": 701,
+      "fields": [
+        {"name": "IPV6_NEXT_HOP", "value": "2001:db8::1"},
+        {"name": "BGP_IPV6_NEXT_HOP", "value": "2001:db8::ffff"}
+      ]
+    }
+  ]
+}

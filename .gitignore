@@ -1,0 +1,14 @@
+/target/
+/.aws/
+.env
+.env.*
+!.env.example
+*.log
+*.pcap
+*.pcapng
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store

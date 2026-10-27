@@ -1,0 +1,18 @@
+{
+  "source_id": 42,
+  "flows": [
+    {
+      "template_id": 256,
+      "fields": [
+        {"name": "IPV4_SRC_ADDR", "value": "192.0.2.1"},
+        {"name": "IPV4_DST_ADDR", "value": "198.51.100.2"},
+        {"name": "L4_SRC_PORT", "value": 12345},
+        {"name": "L4_DST_PORT", "value": 443},
+        {"name": "PROTOCOL", "value": 6},
+        {"name": "TCP_FLAGS", "value": "SA"},
+        {"name": "IN_BYTES", "value": 1000},
+        {"name": "IN_PKTS", "value": 10}
+      ]
+    }
+  ]
+}

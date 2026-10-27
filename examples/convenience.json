@@ -1,0 +1,37 @@
+{
+  "source_id": 42,
+  "flows": [
+    {
+      "template_id": 600,
+      "fields": [
+        {"name": "IPV4_SRC_ADDR", "value": {"prefix": "192.0.2.0/30", "hosts_only": true}},
+        {"name": "IPV4_DST_ADDR", "value": "198.51.100.1"},
+        {"name": "PROTOCOL", "value": 1},
+        {"name": "ICMP_TYPE", "value": {"type": "echo-request", "code": 0}},
+        {"name": "IN_BYTES", "value": {"start": 64, "end": 128, "step": 64}}
+      ]
+    },
+    {
+      "template_id": 601,
+      "fields": [
+        {"name": "IPV6_SRC_ADDR", "value": "2001:db8::/126"},
+        {"name": "IPV6_DST_ADDR", "value": "2001:db8:1::1"},
+        {"name": "PROTOCOL", "value": 58},
+        {"name": "ICMP_TYPE_IPV6", "value": "echo-reply"}
+      ]
+    },
+    {
+      "template_id": 602,
+      "mpls_stack": [
+        {"label": 16000, "tc": 3},
+        24000
+      ],
+      "fields": [
+        {"name": "IPV4_SRC_ADDR", "value": "192.0.2.1"},
+        {"name": "IPV4_DST_ADDR", "value": "198.51.100.2"},
+        {"name": "L4_DST_PORT", "value": {"start": 10000, "end": 10002}},
+        {"name": "MPLS_TOP_LABEL_TTL", "value": 64}
+      ]
+    }
+  ]
+}

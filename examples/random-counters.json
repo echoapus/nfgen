@@ -1,0 +1,12 @@
+{
+  "source_id": 42,
+  "flows": [
+    {
+      "template_id": 801,
+      "fields": [
+        {"name": "IN_PKTS", "value": {"random_between": [10, 100]}},
+        {"name": "IN_BYTES", "value": {"random_between": [1000, 100000]}}
+      ]
+    }
+  ]
+}
