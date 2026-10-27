@@ -27,7 +27,7 @@ Put regular fields in `flows[].fields` as `{"name":"FIELD_NAME","value":value}`.
 
 ## Regular fields
 
-An array is a nonempty list of single values, such as `[80,443]`. A range is a start/end object. Prefixes apply only to IP fields. random_between resamples every record on every send. See the sections below for syntax. Type ID and Bytes refer to NetFlow v9 encoding, not JSON string length.
+An array is a nonempty list of single values, such as `[80,443]`. A range is a start/end object. Prefixes apply only to IP fields. random_between and random_file resample every record on every send. See the sections below for syntax. Type ID and Bytes refer to NetFlow v9 encoding, not JSON string length.
 
 | Field name | Type ID | Bytes | Single value format/range | Other supported formats | Example value |
 |---|---:|---:|---|---|---|
@@ -38,34 +38,34 @@ An array is a nonempty list of single values, such as `[80,443]`. A range is a s
 | `SRC_TOS` | 5 | 1 | Integer `0..=255` | Array, range | `0` |
 | `TCP_FLAGS` | 6 | 1 | Integer `0..=255`, flag string, or hexadecimal string | Array, range | `"SYN\|ACK"` |
 | `L4_SRC_PORT` | 7 | 2 | Integer `0..=65535` | Array, range, random_between | `12345` |
-| `IPV4_SRC_ADDR` | 8 | 4 | IPv4 address string | Array, range, prefix | `"192.0.2.1"` |
+| `IPV4_SRC_ADDR` | 8 | 4 | IPv4 address string | Array, range, prefix, random_file | `"192.0.2.1"` |
 | `SRC_MASK` | 9 | 1 | Integer `0..=32` | Array, range | `24` |
 | `INPUT_SNMP` | 10 | 4 | Integer `0..=4294967295` | Array, range | `70001` |
 | `L4_DST_PORT` | 11 | 2 | Integer `0..=65535` | Array, range, random_between | `443` |
-| `IPV4_DST_ADDR` | 12 | 4 | IPv4 address string | Array, range, prefix | `"198.51.100.2"` |
+| `IPV4_DST_ADDR` | 12 | 4 | IPv4 address string | Array, range, prefix, random_file | `"198.51.100.2"` |
 | `DST_MASK` | 13 | 1 | Integer `0..=32` | Array, range | `24` |
 | `OUTPUT_SNMP` | 14 | 4 | Integer `0..=4294967295` | Array, range | `70002` |
-| `IPV4_NEXT_HOP` | 15 | 4 | IPv4 address string | Array, range, prefix | `"192.0.2.254"` |
+| `IPV4_NEXT_HOP` | 15 | 4 | IPv4 address string | Array, range, prefix, random_file | `"192.0.2.254"` |
 | `SRC_AS` | 16 | 4 | Integer `0..=4294967295` or ASN string | Array, range | `"AS1.10"` |
 | `DST_AS` | 17 | 4 | Integer `0..=4294967295` or ASN string | Array, range | `4200000000` |
-| `BGP_IPV4_NEXT_HOP` | 18 | 4 | IPv4 address string | Array, range, prefix | `"198.51.100.254"` |
+| `BGP_IPV4_NEXT_HOP` | 18 | 4 | IPv4 address string | Array, range, prefix, random_file | `"198.51.100.254"` |
 | `LAST_SWITCHED` | 21 | 4 | Integer `0..=4294967295`; exporter uptime in milliseconds | Array, range | `1000` |
 | `FIRST_SWITCHED` | 22 | 4 | Integer `0..=4294967295`; exporter uptime in milliseconds | Array, range | `0` |
 | `OUT_BYTES` | 23 | 4 | Integer `0..=4294967295` | Array, range | `3000` |
 | `OUT_PKTS` | 24 | 4 | Integer `0..=4294967295` | Array, range | `20` |
-| `IPV6_SRC_ADDR` | 27 | 16 | IPv6 address string | Array, range, prefix | `"2001:db8::1"` |
-| `IPV6_DST_ADDR` | 28 | 16 | IPv6 address string | Array, range, prefix | `"2001:db8:1::2"` |
+| `IPV6_SRC_ADDR` | 27 | 16 | IPv6 address string | Array, range, prefix, random_file | `"2001:db8::1"` |
+| `IPV6_DST_ADDR` | 28 | 16 | IPv6 address string | Array, range, prefix, random_file | `"2001:db8:1::2"` |
 | `IPV6_SRC_MASK` | 29 | 1 | Integer `0..=128` | Array, range | `64` |
 | `IPV6_DST_MASK` | 30 | 1 | Integer `0..=128` | Array, range | `64` |
 | `ICMP_TYPE` | 32 | 2 | Integer `0..=65535`, type name, or `{type,code}` | Array, range | `{"type":"echo-request","code":0}` |
 | `SAMPLING_INTERVAL` | 34 | 4 | Integer `0..=4294967295` | Array, range | `1` |
 | `SAMPLING_ALGORITHM` | 35 | 1 | Integer `0..=255` | Array, range | `1` |
 | `MPLS_TOP_LABEL_TYPE` | 46 | 1 | Integer `0..=255` | Array, range | `0` |
-| `MPLS_TOP_LABEL_IP_ADDR` | 47 | 4 | IPv4 address string | Array, range, prefix | `"192.0.2.254"` |
+| `MPLS_TOP_LABEL_IP_ADDR` | 47 | 4 | IPv4 address string | Array, range, prefix, random_file | `"192.0.2.254"` |
 | `DST_TOS` | 55 | 1 | Integer `0..=255` | Array, range | `0` |
 | `IP_PROTOCOL_VERSION` | 60 | 1 | Integer `4` or `6` | Array, range | `4` |
-| `IPV6_NEXT_HOP` | 62 | 16 | IPv6 address string | Array, range, prefix | `"2001:db8::ffff"` |
-| `BGP_IPV6_NEXT_HOP` | 63 | 16 | IPv6 address string | Array, range, prefix | `"2001:db8:1::ffff"` |
+| `IPV6_NEXT_HOP` | 62 | 16 | IPv6 address string | Array, range, prefix, random_file | `"2001:db8::ffff"` |
+| `BGP_IPV6_NEXT_HOP` | 63 | 16 | IPv6 address string | Array, range, prefix, random_file | `"2001:db8:1::ffff"` |
 | `MPLS_LABEL_1` | 70 | 3 | Integer label `0..=1048575` or `{label,tc,bos}` | Array, range | `{"label":16000,"tc":3,"bos":true}` |
 | `MPLS_LABEL_2` | 71 | 3 | Integer label `0..=1048575` or `{label,tc,bos}` | Array, range | `{"label":16000,"tc":3,"bos":true}` |
 | `MPLS_LABEL_3` | 72 | 3 | Integer label `0..=1048575` or `{label,tc,bos}` | Array, range | `{"label":16000,"tc":3,"bos":true}` |
@@ -79,7 +79,7 @@ An array is a nonempty list of single values, such as `[80,443]`. A range is a s
 | `MPLS_VPN_RD` | 90 | 8 | RD string, Type 0/1/2 | Array | `"65000:100"` |
 | `MPLS_TOP_LABEL_PREFIX_LEN` | 91 | 1 | Integer `0..=128` | Array, range | `24` |
 | `ICMP_TYPE_IPV6` | 139 | 2 | Integer `0..=65535`, type name, or `{type,code}` | Array, range | `{"type":128,"code":0}` |
-| `MPLS_TOP_LABEL_IPV6_ADDR` | 140 | 16 | IPv6 address string | Array, range, prefix | `"2001:db8:2::"` |
+| `MPLS_TOP_LABEL_IPV6_ADDR` | 140 | 16 | IPv6 address string | Array, range, prefix, random_file | `"2001:db8:2::"` |
 | `MPLS_TOP_LABEL_TTL` | 200 | 1 | Integer `0..=255` | Array, range | `64` |
 | `MPLS_LABEL_STACK_LENGTH` | 201 | 4 | Integer `0..=4294967295`; bytes in the original stack | Array, range | `8` |
 | `MPLS_LABEL_STACK_DEPTH` | 202 | 4 | Integer `0..=4294967295`; stack layers | Array, range | `2` |
@@ -138,6 +138,14 @@ Only `L4_SRC_PORT`, `L4_DST_PORT`, `IN_PKTS`, and `IN_BYTES` support random_betw
 ```
 
 Bounds are inclusive and min≤max. Every record is resampled on each send; duplicates are allowed. Each field counts as one configured value. Fields are sampled independently without enforcing a PKTS/BYTES ratio. OUT_PKTS/OUT_BYTES do not support random values. Only L4 ports also accept the legacy `{"random":true,"min":1,"max":65535}` format, defaulting to 1–65535 when bounds are omitted.
+
+Every IP field accepts `random_file`, which draws one address per record from a text file on every send:
+
+```json
+{"name":"IPV4_SRC_ADDR","value":{"random_file":"random-ips.txt"}}
+```
+
+One address per line; blank lines and `#` lines are skipped. Entries are single hosts (/32 or /128): a `/prefix` is ignored. The address version must match the field. Relative paths resolve against the JSON file's folder. The file may be at most 8 MiB and counts as one configured value.
 
 ## TCP flags
 

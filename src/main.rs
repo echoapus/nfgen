@@ -29,6 +29,9 @@ static STOP: AtomicBool = AtomicBool::new(false);
 struct Cli {
     #[command(subcommand)]
     command: Command,
+    /// Print nothing but a final "done" or "fail"; the exit code is unchanged
+    #[arg(short, long, global = true)]
+    silent: bool,
 }
 
 #[derive(Args)]
@@ -365,6 +368,7 @@ fn connect(target: &str, bind: Option<SocketAddr>) -> Result<UdpSocket> {
 }
 
 fn execute(cli: Cli, out: &mut impl Write) -> Result<bool> {
+    let silent = cli.silent;
     let mut interrupted = false;
     match cli.command {
         Command::Validate { input } => summary(&prepare(&input)?, out)?,
@@ -504,7 +508,12 @@ fn execute(cli: Cli, out: &mut impl Write) -> Result<bool> {
             drop(flows);
             out.flush()?;
             let stderr = io::stderr();
-            let interactive = stderr.is_terminal() && io::stdout().is_terminal();
+            let interactive = !silent && stderr.is_terminal() && io::stdout().is_terminal();
+            let mut log: Box<dyn Write> = if silent {
+                Box::new(io::sink())
+            } else {
+                Box::new(stderr.lock())
+            };
             let stats = progress::run(
                 &mut plan,
                 &settings,
@@ -513,7 +522,7 @@ fn execute(cli: Cli, out: &mut impl Write) -> Result<bool> {
                     Some(raw) => raw.send(bytes),
                     None => socket.as_ref().unwrap().send(bytes),
                 },
-                &mut stderr.lock(),
+                &mut log,
                 interactive,
             )?;
             let seconds = stats.elapsed.as_secs_f64();
@@ -544,8 +553,13 @@ fn execute(cli: Cli, out: &mut impl Write) -> Result<bool> {
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
-    let stdout = io::stdout();
-    match execute(cli, &mut stdout.lock()) {
+    let silent = cli.silent;
+    let result = if silent {
+        execute(cli, &mut io::sink())
+    } else {
+        execute(cli, &mut io::stdout().lock())
+    };
+    let code = match result {
         Ok(false) => ExitCode::SUCCESS,
         Ok(true) => ExitCode::from(130),
         Err(error)
@@ -556,10 +570,18 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(error) => {
-            let _ = writeln!(io::stderr().lock(), "Error: {error:#}");
-            ExitCode::FAILURE
+            if silent {
+                let _ = writeln!(io::stdout().lock(), "fail");
+            } else {
+                let _ = writeln!(io::stderr().lock(), "Error: {error:#}");
+            }
+            return ExitCode::FAILURE;
         }
+    };
+    if silent {
+        let _ = writeln!(io::stdout().lock(), "done");
     }
+    code
 }
 
 #[cfg(test)]

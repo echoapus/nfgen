@@ -568,6 +568,7 @@ See [options.json](examples/options.json) for multiple scopes. Its interval is 1
 nfgen validate CONFIG [--packet-size BYTES]
 nfgen preview CONFIG [--packet-size BYTES] [--kind all|templates|data] [--hex] [--limit N] [--template-id ID] [--rate N]
 nfgen send CONFIG [OPTIONS]
+# Any command also accepts -s/--silent: print only done or fail
 ```
 
 ### Validation and preview
@@ -660,6 +661,14 @@ Both bind and source must use the same IP version as target. Source must be expl
 
 When running templates/data separately, preserve source_id, source IP:port, template IDs, and definitions, and check collector cache behavior. For general testing, use `--kind all` in one run.
 
+### Silent mode
+
+Add `-s` / `--silent` to any command to print only `done` or `fail` on stdout, with no progress, statistics, or error details. Exit codes are unchanged. Argument errors are still reported by the argument parser.
+
+```bash
+nfgen send examples/basic.json --target 127.0.0.1:2055 --count 100 --silent
+```
+
 ### Exit codes
 
 | Code | Meaning |
@@ -740,6 +749,7 @@ These 53 regular field IDs, lengths, and types are defined in [src/fields.rs](sr
 | [interfaces.json](examples/interfaces.json) | INPUT_SNMP/OUTPUT_SNMP |
 | [nexthop.json](examples/nexthop.json) | Four IPv4/IPv6 next-hop fields |
 | [random-ports.json](examples/random-ports.json) | Resample the source L4 port on each send |
+| [random-ips.json](examples/random-ips.json) | Draw IPV4_SRC_ADDR from [random-ips.txt](examples/random-ips.txt) on each send |
 | [random-counters.json](examples/random-counters.json) | Resample IN_PKTS/IN_BYTES on each send |
 | [ranges.json](examples/ranges.json) | IP ranges, arrays, and field combinations |
 | [options.json](examples/options.json) | Sampling Options with multiple scopes |
@@ -801,8 +811,9 @@ Distribute the release executable, required JSON, HTML, and documentation. Sourc
 | Shared template structures differ | Scope, names, order, and lengths must match; change values only or assign a new ID |
 | Collector cannot find a template | Start with all; for separate templates/data runs, fix the source and source_id and check definitions |
 | Invalid JSON | Use double quotes; remove comments/trailing commas; do not abbreviate name/value to n/v |
+| random_file cannot be read | Relative paths resolve against the JSON file's folder, not the current directory; the file must be UTF-8 and at most 8 MiB |
 | Wrong IP version | Match IPv4/IPv6 values to their fields; transport and record IP versions are configured separately |
-| More than 500,000 expanded records | Multiply value counts per field, then sum all flows; random_between counts as one value |
+| More than 500,000 expanded records | Multiply value counts per field, then sum all flows; random_between and random_file each count as one value |
 | Template or record does not fit | Increase packet-size reasonably or reduce fields, while respecting path MTU |
 | `Message too long` | Reduce packet-size, especially in raw mode without fragmentation; do not rely only on the allowed maximum |
 | Bind fails | Use an IP configured locally; check IP version and port availability |

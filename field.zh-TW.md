@@ -27,7 +27,7 @@
 
 ## 一般欄位
 
-「陣列」是單一值的非空清單，例如 `[80,443]`；「range」是起訖物件；「prefix」只適用 IP；「random_between」表示每次發送逐筆重抽。詳細格式見下方各節。Type ID 與 Bytes 是 NetFlow v9 編碼，不是 JSON 字串長度。
+「陣列」是單一值的非空清單，例如 `[80,443]`；「range」是起訖物件；「prefix」只適用 IP；「random_between」與「random_file」表示每次發送逐筆重抽。詳細格式見下方各節。Type ID 與 Bytes 是 NetFlow v9 編碼，不是 JSON 字串長度。
 
 | Field name | Type ID | Bytes | value 單一值格式／範圍 | 其他支援格式 | value 範例 |
 |---|---:|---:|---|---|---|
@@ -38,34 +38,34 @@
 | `SRC_TOS` | 5 | 1 | 整數 `0..=255` | 陣列、range | `0` |
 | `TCP_FLAGS` | 6 | 1 | 整數 `0..=255`、flags 字串或十六進位字串 | 陣列、range | `"SYN\|ACK"` |
 | `L4_SRC_PORT` | 7 | 2 | 整數 `0..=65535` | 陣列、range、random_between | `12345` |
-| `IPV4_SRC_ADDR` | 8 | 4 | IPv4 位址字串 | 陣列、range、prefix | `"192.0.2.1"` |
+| `IPV4_SRC_ADDR` | 8 | 4 | IPv4 位址字串 | 陣列、range、prefix、random_file | `"192.0.2.1"` |
 | `SRC_MASK` | 9 | 1 | 整數 `0..=32` | 陣列、range | `24` |
 | `INPUT_SNMP` | 10 | 4 | 整數 `0..=4294967295` | 陣列、range | `70001` |
 | `L4_DST_PORT` | 11 | 2 | 整數 `0..=65535` | 陣列、range、random_between | `443` |
-| `IPV4_DST_ADDR` | 12 | 4 | IPv4 位址字串 | 陣列、range、prefix | `"198.51.100.2"` |
+| `IPV4_DST_ADDR` | 12 | 4 | IPv4 位址字串 | 陣列、range、prefix、random_file | `"198.51.100.2"` |
 | `DST_MASK` | 13 | 1 | 整數 `0..=32` | 陣列、range | `24` |
 | `OUTPUT_SNMP` | 14 | 4 | 整數 `0..=4294967295` | 陣列、range | `70002` |
-| `IPV4_NEXT_HOP` | 15 | 4 | IPv4 位址字串 | 陣列、range、prefix | `"192.0.2.254"` |
+| `IPV4_NEXT_HOP` | 15 | 4 | IPv4 位址字串 | 陣列、range、prefix、random_file | `"192.0.2.254"` |
 | `SRC_AS` | 16 | 4 | 整數 `0..=4294967295` 或 ASN 字串 | 陣列、range | `"AS1.10"` |
 | `DST_AS` | 17 | 4 | 整數 `0..=4294967295` 或 ASN 字串 | 陣列、range | `4200000000` |
-| `BGP_IPV4_NEXT_HOP` | 18 | 4 | IPv4 位址字串 | 陣列、range、prefix | `"198.51.100.254"` |
+| `BGP_IPV4_NEXT_HOP` | 18 | 4 | IPv4 位址字串 | 陣列、range、prefix、random_file | `"198.51.100.254"` |
 | `LAST_SWITCHED` | 21 | 4 | 整數 `0..=4294967295`；exporter uptime 毫秒 | 陣列、range | `1000` |
 | `FIRST_SWITCHED` | 22 | 4 | 整數 `0..=4294967295`；exporter uptime 毫秒 | 陣列、range | `0` |
 | `OUT_BYTES` | 23 | 4 | 整數 `0..=4294967295` | 陣列、range | `3000` |
 | `OUT_PKTS` | 24 | 4 | 整數 `0..=4294967295` | 陣列、range | `20` |
-| `IPV6_SRC_ADDR` | 27 | 16 | IPv6 位址字串 | 陣列、range、prefix | `"2001:db8::1"` |
-| `IPV6_DST_ADDR` | 28 | 16 | IPv6 位址字串 | 陣列、range、prefix | `"2001:db8:1::2"` |
+| `IPV6_SRC_ADDR` | 27 | 16 | IPv6 位址字串 | 陣列、range、prefix、random_file | `"2001:db8::1"` |
+| `IPV6_DST_ADDR` | 28 | 16 | IPv6 位址字串 | 陣列、range、prefix、random_file | `"2001:db8:1::2"` |
 | `IPV6_SRC_MASK` | 29 | 1 | 整數 `0..=128` | 陣列、range | `64` |
 | `IPV6_DST_MASK` | 30 | 1 | 整數 `0..=128` | 陣列、range | `64` |
 | `ICMP_TYPE` | 32 | 2 | 整數 `0..=65535`、type 名稱或 `{type,code}` | 陣列、range | `{"type":"echo-request","code":0}` |
 | `SAMPLING_INTERVAL` | 34 | 4 | 整數 `0..=4294967295` | 陣列、range | `1` |
 | `SAMPLING_ALGORITHM` | 35 | 1 | 整數 `0..=255` | 陣列、range | `1` |
 | `MPLS_TOP_LABEL_TYPE` | 46 | 1 | 整數 `0..=255` | 陣列、range | `0` |
-| `MPLS_TOP_LABEL_IP_ADDR` | 47 | 4 | IPv4 位址字串 | 陣列、range、prefix | `"192.0.2.254"` |
+| `MPLS_TOP_LABEL_IP_ADDR` | 47 | 4 | IPv4 位址字串 | 陣列、range、prefix、random_file | `"192.0.2.254"` |
 | `DST_TOS` | 55 | 1 | 整數 `0..=255` | 陣列、range | `0` |
 | `IP_PROTOCOL_VERSION` | 60 | 1 | 整數 `4` 或 `6` | 陣列、range | `4` |
-| `IPV6_NEXT_HOP` | 62 | 16 | IPv6 位址字串 | 陣列、range、prefix | `"2001:db8::ffff"` |
-| `BGP_IPV6_NEXT_HOP` | 63 | 16 | IPv6 位址字串 | 陣列、range、prefix | `"2001:db8:1::ffff"` |
+| `IPV6_NEXT_HOP` | 62 | 16 | IPv6 位址字串 | 陣列、range、prefix、random_file | `"2001:db8::ffff"` |
+| `BGP_IPV6_NEXT_HOP` | 63 | 16 | IPv6 位址字串 | 陣列、range、prefix、random_file | `"2001:db8:1::ffff"` |
 | `MPLS_LABEL_1` | 70 | 3 | 整數 label `0..=1048575` 或 `{label,tc,bos}` | 陣列、range | `{"label":16000,"tc":3,"bos":true}` |
 | `MPLS_LABEL_2` | 71 | 3 | 整數 label `0..=1048575` 或 `{label,tc,bos}` | 陣列、range | `{"label":16000,"tc":3,"bos":true}` |
 | `MPLS_LABEL_3` | 72 | 3 | 整數 label `0..=1048575` 或 `{label,tc,bos}` | 陣列、range | `{"label":16000,"tc":3,"bos":true}` |
@@ -79,7 +79,7 @@
 | `MPLS_VPN_RD` | 90 | 8 | RD 字串，Type 0／1／2 | 陣列 | `"65000:100"` |
 | `MPLS_TOP_LABEL_PREFIX_LEN` | 91 | 1 | 整數 `0..=128` | 陣列、range | `24` |
 | `ICMP_TYPE_IPV6` | 139 | 2 | 整數 `0..=65535`、type 名稱或 `{type,code}` | 陣列、range | `{"type":128,"code":0}` |
-| `MPLS_TOP_LABEL_IPV6_ADDR` | 140 | 16 | IPv6 位址字串 | 陣列、range、prefix | `"2001:db8:2::"` |
+| `MPLS_TOP_LABEL_IPV6_ADDR` | 140 | 16 | IPv6 位址字串 | 陣列、range、prefix、random_file | `"2001:db8:2::"` |
 | `MPLS_TOP_LABEL_TTL` | 200 | 1 | 整數 `0..=255` | 陣列、range | `64` |
 | `MPLS_LABEL_STACK_LENGTH` | 201 | 4 | 整數 `0..=4294967295`；原始 stack 的 bytes 數 | 陣列、range | `8` |
 | `MPLS_LABEL_STACK_DEPTH` | 202 | 4 | 整數 `0..=4294967295`；stack 層數 | 陣列、range | `2` |
@@ -138,6 +138,14 @@ IPv4 prefix 預設包含網段首尾，`/24` 為 256 個位址；hosts_only 排�
 ```
 
 上下限都包含、min≤max，每次發送逐筆重抽，允許重複；每欄只算一個設定值。各欄位獨立抽樣，不保證 PKTS／BYTES 比例。OUT_PKTS／OUT_BYTES 不支援隨機值。僅 L4 port 另接受舊格式 `{"random":true,"min":1,"max":65535}`，省略上下限時為 1～65535。
+
+所有 IP 欄位都支援 `random_file`，每次發送逐筆從文字檔抽一個位址：
+
+```json
+{"name":"IPV4_SRC_ADDR","value":{"random_file":"random-ips.txt"}}
+```
+
+每行一個位址，空行與 `#` 開頭的行會略過。每個位址一律視為單一主機（/32 或 /128），`/prefix` 會被忽略。位址版本須與欄位相符。相對路徑以 JSON 檔所在資料夾為準。檔案上限 8 MiB，只算一個設定值。
 
 ## TCP flags
 

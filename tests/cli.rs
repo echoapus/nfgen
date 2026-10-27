@@ -460,3 +460,36 @@ fn error_reporting_to_full_stderr_exits_without_panicking() {
         .unwrap();
     assert_eq!(output.status.code(), Some(1));
 }
+
+#[test]
+fn silent_prints_only_done_or_fail() {
+    let collector = std::net::UdpSocket::bind("127.0.0.1:0").unwrap();
+    let target = collector.local_addr().unwrap().to_string();
+    for (args, expected, code) in [
+        (
+            vec!["validate", "examples/basic.json", "--silent"],
+            "done\n",
+            0,
+        ),
+        (
+            vec!["-s", "preview", "examples/basic.json", "--hex"],
+            "done\n",
+            0,
+        ),
+        (
+            vec!["send", "examples/basic.json", "--target", &target, "-s"],
+            "done\n",
+            0,
+        ),
+        (vec!["validate", "examples/missing.json", "-s"], "fail\n", 1),
+    ] {
+        let output = cli(&args);
+        assert_eq!(
+            String::from_utf8(output.stdout).unwrap(),
+            expected,
+            "{args:?}"
+        );
+        assert!(output.stderr.is_empty(), "{args:?}");
+        assert_eq!(output.status.code(), Some(code), "{args:?}");
+    }
+}

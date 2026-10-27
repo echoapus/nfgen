@@ -570,6 +570,7 @@ ASN 部分支援 AS 前綴與 asdot；未指定 type 時，ASN≤65535 選 Type 
 nfgen validate CONFIG [--packet-size BYTES]
 nfgen preview CONFIG [--packet-size BYTES] [--kind all|templates|data] [--hex] [--limit N] [--template-id ID] [--rate N]
 nfgen send CONFIG [OPTIONS]
+# 所有指令都可加 -s/--silent：只輸出 done 或 fail
 ```
 
 ### 驗證與預覽
@@ -662,6 +663,14 @@ bind 與 source 都須和 target 使用相同 IP 版本。source 必須是明確
 
 分開執行 templates/data 時，請維持相同 source_id、來源 IP:port、Template ID 與定義，並確認 collector 的快取行為。一般測試優先使用同一次 `--kind all`。
 
+### 靜默模式
+
+任何指令加上 `-s` / `--silent`，stdout 只會輸出 `done` 或 `fail`，不顯示進度、統計或錯誤細節。退出碼不變。參數錯誤仍由參數解析器輸出。
+
+```bash
+nfgen send examples/basic.json --target 127.0.0.1:2055 --count 100 --silent
+```
+
 ### 退出碼
 
 | 退出碼 | 意義 |
@@ -742,6 +751,7 @@ bind 與 source 都須和 target 使用相同 IP 版本。source 必須是明確
 | [interfaces.json](examples/interfaces.json) | INPUT_SNMP／OUTPUT_SNMP |
 | [nexthop.json](examples/nexthop.json) | 四種 IPv4／IPv6 next-hop |
 | [random-ports.json](examples/random-ports.json) | 每次發送重抽來源 L4 port |
+| [random-ips.json](examples/random-ips.json) | 每次發送從 [random-ips.txt](examples/random-ips.txt) 抽 IPV4_SRC_ADDR |
 | [random-counters.json](examples/random-counters.json) | 每次發送重抽 IN_PKTS／IN_BYTES |
 | [ranges.json](examples/ranges.json) | IP range、陣列與多欄位組合 |
 | [options.json](examples/options.json) | 多 scope 取樣 Options |
@@ -803,8 +813,9 @@ Release 已啟用 `lto="thin"`、`codegen-units=1`、`strip=true`，沒有導入
 | 共用 Template 結構不一致 | 相同 ID 的 scope、欄位名稱、順序與長度須一致；只改值，或為不同結構指定新 ID |
 | collector 找不到 Template | 首次使用 all；若分程序送 templates/data，固定來源與 source_id，並核對 Template 定義 |
 | JSON 格式錯誤 | 使用雙引號，移除註解、尾端逗號；name/value 不可縮成 n/v |
+| random_file 讀不到 | 相對路徑以 JSON 檔所在資料夾為準，不是目前目錄；檔案須為 UTF-8，上限 8 MiB |
 | IP 版本不符 | IPv4 欄位填 IPv4，IPv6 欄位填 IPv6；真實傳輸版本與紀錄版本分開設定 |
-| 設定超過 500,000 筆 | 按各欄位值數相乘再加總所有 flow；random_between 算一個設定值 |
+| 設定超過 500,000 筆 | 按各欄位值數相乘再加總所有 flow；random_between 與 random_file 各算一個設定值 |
 | Template 或單筆紀錄放不下 | 合理提高 packet-size 或減少欄位；仍需符合實際路徑 MTU |
 | `Message too long` | 降低 packet-size，尤其 raw 模式不主動分片；不要只看工具允許的最大值 |
 | bind 失敗 | 使用本機已配置的 IP，確認 IP 版本及 port 是否被占用 |
