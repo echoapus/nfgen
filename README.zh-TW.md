@@ -456,6 +456,16 @@ IPv4 next-hop 使用 `IPV4_NEXT_HOP`、`BGP_IPV4_NEXT_HOP`；IPv6 使用 `IPV6_N
 
 僅 L4 port 另支援舊寫法 `{"random":true,"min":49152,"max":65535}`，省略 min/max 時為 1～65535；不可與 random_between 混用。`validate`、`preview` 不抽樣，preview hex 使用 min 占位。send 使用緩衝的 `/dev/urandom`，沒有固定 seed；逐筆抽樣有額外成本，不能套用固定封包的效能估計。
 
+### 從檔案隨機取 IP
+
+所有 IP 欄位都接受 `{"random_file":"PATH"}`，每次送出時每筆紀錄都會從檔案中隨機取一行：
+
+```json
+{"name":"IPV4_SRC_ADDR","value":{"random_file":"random-ips.txt"}}
+```
+
+每行一個位址，空行與 `#` 開頭的行會略過。每個位址一律視為單一主機（/32 或 /128）；`/prefix` 會被忽略，例如 `198.51.100.0/24` 會送出 `198.51.100.0`。位址版本必須與欄位相符。相對路徑以 JSON 檔所在資料夾為準。檔案上限 8 MiB，只算一個設定值。preview hex 使用第一個位址。範例見 `examples/random-ips.json`。
+
 ### TCP flags、ASN 與 ICMP
 
 | 類型 | 可用寫法與限制 |

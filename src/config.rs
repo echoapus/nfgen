@@ -3,7 +3,8 @@ use std::{
     fs::File,
     io::Read,
     net::{IpAddr, Ipv4Addr},
-    path::Path,
+    path::{Path, PathBuf},
+    sync::Arc,
 };
 
 use anyhow::{Context, Result, bail, ensure};
@@ -21,6 +22,9 @@ pub struct Config {
     #[serde(default)]
     pub source_id: u32,
     pub flows: Vec<FlowConfig>,
+    /// Directory that relative random_file paths resolve against; empty means the working directory.
+    #[serde(skip)]
+    pub base: PathBuf,
 }
 
 #[derive(Debug, Deserialize)]
@@ -53,6 +57,11 @@ pub enum Values {
         max: u32,
         length: usize,
     },
+    /// Addresses (length bytes each); one is drawn per record on every send.
+    RandomFile {
+        bytes: Arc<[u8]>,
+        length: usize,
+    },
     Range {
         start: u128,
         step: u128,
@@ -66,7 +75,7 @@ impl Values {
     pub fn count(&self) -> usize {
         match self {
             Self::List { bytes, length } => bytes.len() / length,
-            Self::RandomField { .. } => 1,
+            Self::RandomField { .. } | Self::RandomFile { .. } => 1,
             Self::Range { count, .. } => *count,
         }
     }
@@ -79,6 +88,7 @@ impl Values {
             Self::RandomField { min, length, .. } => {
                 output.extend_from_slice(&min.to_be_bytes()[4 - length..]);
             }
+            Self::RandomFile { bytes, length } => output.extend_from_slice(&bytes[..*length]),
             Self::Range {
                 start,
                 step,
@@ -128,11 +138,52 @@ pub fn load(path: &Path) -> Result<Config> {
         bytes.len() as u64 <= MAX_CONFIG_BYTES,
         "Configuration file must not exceed 8 MiB"
     );
-    serde_json::from_slice(&bytes).with_context(|| {
+    let mut config: Config = serde_json::from_slice(&bytes).with_context(|| {
         format!(
             "{}: invalid JSON configuration; check brackets, commas, and quotes at the error location. See examples/basic.json",
             path.display()
         )
+    })?;
+    config.base = path.parent().unwrap_or(Path::new("")).to_path_buf();
+    Ok(config)
+}
+
+fn random_file(path: &Path, spec: FieldSpec) -> Result<Values> {
+    ensure!(
+        matches!(spec.kind, Kind::Ipv4 | Kind::Ipv6),
+        "random_file is only supported for IP fields"
+    );
+    let mut bytes = Vec::new();
+    File::open(path)
+        .with_context(|| format!("Failed to read random_file {}", path.display()))?
+        .take(MAX_CONFIG_BYTES + 1)
+        .read_to_end(&mut bytes)?;
+    ensure!(
+        bytes.len() as u64 <= MAX_CONFIG_BYTES,
+        "random_file must not exceed 8 MiB"
+    );
+    let text = String::from_utf8(bytes)
+        .with_context(|| format!("random_file {} must be UTF-8 text", path.display()))?;
+    let mut addresses = Vec::new();
+    for (index, line) in text.lines().enumerate() {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        // Every entry is a single host (/32 or /128): any prefix length is ignored.
+        let ip = line.split_once('/').map_or(line, |(ip, _)| ip).trim();
+        let (number, length) = address(ip, spec.kind)
+            .with_context(|| format!("{} line {}", path.display(), index + 1))?;
+        addresses.extend_from_slice(&number.to_be_bytes()[16 - length..]);
+    }
+    ensure!(
+        !addresses.is_empty(),
+        "random_file {} contains no addresses",
+        path.display()
+    );
+    Ok(Values::RandomFile {
+        bytes: addresses.into(),
+        length: spec.length,
     })
 }
 
@@ -522,7 +573,20 @@ fn stack_fields(stack: &[Value]) -> Result<Vec<FieldConfig>> {
     Ok(fields)
 }
 
-fn values(value: &Value, spec: FieldSpec, name: &str) -> Result<Values> {
+fn values(value: &Value, spec: FieldSpec, name: &str, base: &Path) -> Result<Values> {
+    if value
+        .as_object()
+        .is_some_and(|object| object.contains_key("random_file"))
+    {
+        #[derive(Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct RandomFile {
+            random_file: PathBuf,
+        }
+        let random: RandomFile = serde_json::from_value(value.clone())
+            .context("random_file must be a file path string")?;
+        return random_file(&base.join(random.random_file), spec);
+    }
     if value
         .as_object()
         .is_some_and(|object| object.contains_key("random_between"))
@@ -757,7 +821,7 @@ pub fn validate(config: &Config) -> Result<Vec<Flow>> {
                             "Duplicate fields are not allowed"
                         );
                         let spec = fields::lookup(&name, scope)?;
-                        let values = values(&field.value, spec, &name)?;
+                        let values = values(&field.value, spec, &name, &config.base)?;
                         record_count = record_count
                             .checked_mul(values.count())
                             .context("Expanded record count overflow")?;

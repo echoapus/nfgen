@@ -1,0 +1,15 @@
+{
+  "source_id": 1,
+  "flows": [
+    {
+      "template_id": 810,
+      "fields": [
+        {"name": "IPV4_SRC_ADDR", "value": {"random_file": "random-ips.txt"}},
+        {"name": "IPV4_DST_ADDR", "value": "203.0.113.1"},
+        {"name": "PROTOCOL", "value": 6},
+        {"name": "IN_PKTS", "value": 10},
+        {"name": "IN_BYTES", "value": 1000}
+      ]
+    }
+  ]
+}

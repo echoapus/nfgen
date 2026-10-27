@@ -454,6 +454,16 @@ Bounds are inclusive and min≤max. L4 ports must be integers in `0..=65535`; IN
 
 Only L4 ports also accept the legacy `{"random":true,"min":49152,"max":65535}` format. Omitted bounds default to 1–65535. Do not combine it with random_between. `validate` and `preview` do not sample; preview hex uses min. Send uses buffered `/dev/urandom` with no fixed seed. Per-record sampling adds work, so fixed-packet performance estimates do not apply.
 
+### Random IP addresses from a file
+
+Any IP field accepts `{"random_file":"PATH"}`. Each record draws one line from the file on every send:
+
+```json
+{"name":"IPV4_SRC_ADDR","value":{"random_file":"random-ips.txt"}}
+```
+
+Put one address per line. Blank lines and lines starting with `#` are skipped. Every entry is sent as a single host (/32 or /128); a `/prefix` is ignored, so `198.51.100.0/24` sends `198.51.100.0`. The address version must match the field. Relative paths are resolved against the JSON file's folder. The file must not exceed 8 MiB, and it counts as one configured value. Preview hex uses the first address. See `examples/random-ips.json`.
+
 ### TCP flags, ASNs, and ICMP
 
 | Type | Syntax and limits |

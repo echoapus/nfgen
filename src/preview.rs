@@ -105,6 +105,15 @@ pub fn flow(flow: &Flow, out: &mut impl Write) -> io::Result<()> {
             )?;
             continue;
         }
+        if let Values::RandomFile { bytes, length } = &column.values {
+            writeln!(
+                out,
+                "  {} / {length} B / random_file {} addresses (resampled per record on each send; preview hex uses the first)",
+                column.name,
+                bytes.len() / length
+            )?;
+            continue;
+        }
         let mut bytes = Vec::with_capacity(column.spec.length);
         column.values.append(0, &mut bytes);
         // Scope IDs use a separate namespace; ID 6 only means TCP flags in data fields.

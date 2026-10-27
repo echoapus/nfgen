@@ -24,7 +24,7 @@ static STOP: AtomicBool = AtomicBool::new(false);
 #[command(
     version,
     about = "NetFlow v9 traffic generator: validate and preview before sending; no root required by default",
-    after_help = "Recommended workflow: validate → preview → send. Run nfgen <COMMAND> -h for all command options.\nConfiguration: JSON; flows with the same template_id can share a template structure. Each flow expands its values independently.\nField values support scalars, arrays, prefixes, or ranges; multiple values form a Cartesian product. L4 ports, IN_PKTS, and IN_BYTES also support random_between=[min,max] with inclusive bounds.\nExamples:\n  nfgen validate examples/basic.json\n  nfgen preview examples/interfaces.json --hex\n  nfgen send examples/basic.json --target 127.0.0.1:2055 --count 100\nMore examples: examples/options.json, ranges.json, mpls.json, asn.json, convenience.json, nexthop.json, random-ports.json.\nOpen config-builder.html in a browser to fill out a form and download JSON.\nSee README.md for setup, configuration, CLI options, and the field reference.\nExit codes: 0 success, 1 configuration or runtime error, 2 argument error, 130 interrupted by user."
+    after_help = "Recommended workflow: validate → preview → send. Run nfgen <COMMAND> -h for all command options.\nConfiguration: JSON; flows with the same template_id can share a template structure. Each flow expands its values independently.\nField values support scalars, arrays, prefixes, or ranges; multiple values form a Cartesian product. L4 ports, IN_PKTS, and IN_BYTES also support random_between=[min,max] with inclusive bounds. IP fields support random_file=PATH (one address per line, sent as /32 or /128).\nExamples:\n  nfgen validate examples/basic.json\n  nfgen preview examples/interfaces.json --hex\n  nfgen send examples/basic.json --target 127.0.0.1:2055 --count 100\nMore examples: examples/options.json, ranges.json, mpls.json, asn.json, convenience.json, nexthop.json, random-ports.json, random-ips.json.\nOpen config-builder.html in a browser to fill out a form and download JSON.\nSee README.md for setup, configuration, CLI options, and the field reference.\nExit codes: 0 success, 1 configuration or runtime error, 2 argument error, 130 interrupted by user."
 )]
 struct Cli {
     #[command(subcommand)]
@@ -194,6 +194,9 @@ fn simulated_estimate(
                     start, step, count, ..
                 } => *start as f64 + *step as f64 * (*count - 1) as f64 / 2.0,
                 config::Values::RandomField { min, max, .. } => (*min as f64 + *max as f64) / 2.0,
+                config::Values::RandomFile { .. } => {
+                    unreachable!("random_file is limited to IP fields")
+                }
             };
             total += average * flow.record_count as f64;
         }

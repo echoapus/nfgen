@@ -1,6 +1,7 @@
 use std::{
     collections::HashMap,
     io::{self, Read},
+    sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
@@ -26,27 +27,41 @@ pub struct RandomField {
     pub min: u32,
     pub max: u32,
     pub length: usize,
+    /// When set, min..=max indexes these length-byte values instead of being the value.
+    pub pool: Option<Arc<[u8]>>,
 }
 
 impl Packet {
     pub fn randomize_fields(&mut self, random: &mut impl Read) -> io::Result<()> {
         for field in &self.random_fields {
+            // Pool indexes use 4 random bytes; numbers use their own field width.
+            let draw = if field.pool.is_some() {
+                4
+            } else {
+                field.length
+            };
             let width = u64::from(field.max) - u64::from(field.min) + 1;
-            let domain = 1u64 << (field.length * 8);
+            let domain = 1u64 << (draw * 8);
             let bound = domain - domain % width;
             for record in 0..self.data_records as usize {
                 // Rejection sampling avoids bias when the range does not divide the domain.
                 let value = loop {
                     let mut bytes = [0; 4];
-                    random.read_exact(&mut bytes[4 - field.length..])?;
+                    random.read_exact(&mut bytes[4 - draw..])?;
                     let value = u64::from(u32::from_be_bytes(bytes));
                     if value < bound {
                         break (u64::from(field.min) + value % width) as u32;
                     }
                 };
                 let at = 24 + record * self.record_length + field.offset;
-                self.bytes[at..at + field.length]
-                    .copy_from_slice(&value.to_be_bytes()[4 - field.length..]);
+                let target = &mut self.bytes[at..at + field.length];
+                match &field.pool {
+                    Some(pool) => {
+                        let from = value as usize * field.length;
+                        target.copy_from_slice(&pool[from..from + field.length]);
+                    }
+                    None => target.copy_from_slice(&value.to_be_bytes()[4 - field.length..]),
+                }
             }
         }
         Ok(())
@@ -127,13 +142,22 @@ pub fn build(source_id: u32, flows: &[Flow], limit: usize) -> Result<Plan> {
         let mut random_fields = Vec::new();
         let mut offset = 0;
         for column in &flow.columns {
-            if let Values::RandomField { min, max, length } = column.values {
-                random_fields.push(RandomField {
+            match &column.values {
+                Values::RandomField { min, max, length } => random_fields.push(RandomField {
                     offset,
-                    min,
-                    max,
-                    length,
-                });
+                    min: *min,
+                    max: *max,
+                    length: *length,
+                    pool: None,
+                }),
+                Values::RandomFile { bytes, length } => random_fields.push(RandomField {
+                    offset,
+                    min: 0,
+                    max: (bytes.len() / length - 1) as u32,
+                    length: *length,
+                    pool: Some(bytes.clone()),
+                }),
+                _ => {}
             }
             offset += column.spec.length;
         }

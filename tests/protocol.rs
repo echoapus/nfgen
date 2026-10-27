@@ -1319,3 +1319,50 @@ fn sender_redraws_random_counters_on_reused_packets() {
     .unwrap();
     assert_eq!((data, stats.records), (3, 3));
 }
+
+#[test]
+fn random_file_draws_host_addresses_relative_to_the_config() {
+    let config = config::load(std::path::Path::new("examples/random-ips.json")).unwrap();
+    let mut plan =
+        protocol::build(config.source_id, &config::validate(&config).unwrap(), 1400).unwrap();
+    assert_eq!(plan.records, 1);
+    let packet = &mut plan.data[0];
+    // Preview bytes use the first address; draws index the three file entries.
+    assert_eq!(&packet.bytes[24..28], &[192, 0, 2, 10]);
+    packet
+        .randomize_fields(&mut [0u8, 0, 0, 2].as_slice())
+        .unwrap();
+    assert_eq!(&packet.bytes[24..28], &[198, 51, 100, 0]);
+    packet
+        .randomize_fields(&mut [0u8, 0, 0, 1].as_slice())
+        .unwrap();
+    assert_eq!(&packet.bytes[24..28], &[192, 0, 2, 20]);
+    assert_eq!(&packet.bytes[28..32], &[203, 0, 113, 1]);
+
+    let dir = std::env::temp_dir().join(format!("nfgen-random-file-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let one = |name: &str, file: &str, text: &str| {
+        std::fs::write(dir.join(file), text).unwrap();
+        let mut config: Config = serde_json::from_value(json!({"flows":[{"template_id":800,"fields":[{"name":name,"value":{"random_file":file}}]}]})).unwrap();
+        config.base = dir.clone();
+        config::validate(&config).map(|_| ())
+    };
+    assert!(one("IPV6_SRC_ADDR", "v6.txt", "2001:db8::1/64\n\n2001:db8::2\n").is_ok());
+    for (name, file, text) in [
+        ("IPV4_SRC_ADDR", "v6-in-v4.txt", "2001:db8::1\n"),
+        ("IPV4_SRC_ADDR", "empty.txt", "# nothing\n\n"),
+        ("IPV4_SRC_ADDR", "bad.txt", "192.0.2.1\nnot-an-ip\n"),
+        ("L4_SRC_PORT", "port.txt", "192.0.2.1\n"),
+    ] {
+        let error = format!("{:#}", one(name, file, text).unwrap_err());
+        assert!(error.contains(name), "{error}");
+    }
+    assert!(
+        format!(
+            "{:#}",
+            one("IPV4_SRC_ADDR", "bad.txt", "192.0.2.1\nnot-an-ip\n").unwrap_err()
+        )
+        .contains("line 2")
+    );
+    std::fs::remove_dir_all(&dir).unwrap();
+}
